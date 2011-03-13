@@ -14,62 +14,68 @@ end
 
 class Pry
   module MethodInfo
-
     @doc_cache = {}
     class << self; attr_reader :doc_cache; end
 
+    # Convert a method object into the `Class#method` string notation.
+    #@param [Method, UnboundMethod] meth
+    #@return [String] The method in string receiver notation.
     def self.receiver_notation_for(meth)
       if meth.owner.name
-        #klassinst, klass = '#', meth.owner.name
         "#{meth.owner.name}##{meth.name}"
       else 
-        #klassinst, klass = '.', meth.owner.to_s[/#<.+?:(.+?)>/, 1]
         "#{meth.owner.to_s[/#<.+?:(.+?)>/, 1]}.#{meth.name}"
       end
+    end
+
+    # Check whether the file containing the method is already cached.
+    # @param [Method, UnboundMethod] meth The method object.
+    # @return [Boolean] Whether the method is cached.
+    def self.cached?(meth)
+      !!registry_lookup(meth)
+    end
+
+    def self.registry_lookup(meth)
+      obj = YARD::Registry.at(receiver_notation_for(meth))
+
+      # YARD thinks that some methods are on Object when
+      # they're actually on Kernel; so try again on Object if Kernel fails.
+      if obj.nil? && meth.owner == Kernel 
+        obj = YARD::Registry.at("Object##{meth.name}")
+      end
+      obj
     end
 
     # Retrieve the YARD object that contains the method data.
     # @param [Method, UnboundMethod] meth The method object.
     # @return [YARD::CodeObjects::MethodObject] The YARD data for the method.
     def self.yard_object_for(meth)
-      return nil if is_eval_method?(meth)
       cache(meth)
-      
-      obj = YARD::Registry.at(receiver_notation_for(meth))
-
-      # Stupidly, YARD thinks that some methods are on Object when
-      # they're actually on Kernel; so try again on Object if Kernel fails.
-      if obj.nil? && meth.owner == Kernel 
-        obj = YARD::Registry.at("Object##{meth.name}")
-      end
-
-      obj
+      registry_lookup(meth)
     end
 
     def self.is_eval_method?(meth)
       file, _ = meth.source_location
-      
       if file =~ /(\(.*\))|<.*>/
-        return true
+        true
+      else
+        false
       end
-      false
     end
 
-    # Cache the file that holds the method or return true if file is
-    # already cached. Return false if the method cannot be cached -
+    # Cache the file that holds the method or return immediately if file is
+    # already cached. Return if the method cannot be cached -
     # i.e is a C method.
     # @param [Method, UnboundMethod] meth The method object.
-    # @return [Boolean] Whether the cache was successful.
     def self.cache(meth)
       file, _ = meth.source_location
       return if !file
       return if is_eval_method?(meth)
-      return if doc_cache[File.expand_path(file)]
+      return if cached?(meth)
 
       log.enter_level(Logger::FATAL) do
         YARD.parse(file)
       end
-      doc_cache[File.expand_path(file)] = true
     end
   end
 end  
