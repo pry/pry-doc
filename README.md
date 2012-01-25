@@ -1,27 +1,19 @@
 pry-doc
 ===========
 
-(C) John Mair (banisterfiend) 2010
+(C) John Mair (banisterfiend) 2011
 
-FIXME: _tagline_
-
-FIXME: _description goes here_
+_Provides YARD and extended documentation support for Pry_
 
 * Install the [gem](https://rubygems.org/gems/pry-doc): `gem install pry-doc`
 * Read the [documentation](http://rdoc.info/github/banister/pry-doc/master/file/README.md)
 * See the [source code](http://github.com/banister/pry-doc)
 
-Example: Example description
+Example: Provide access to Ruby core documentation and source code from within Pry
 --------
 
-Example preamble
-
-    puts "example code"
-
-Features and limitations
--------------------------
-
-Feature List Preamble
+  show-doc puts
+  show-method puts
 
 Contact
 -------

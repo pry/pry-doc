@@ -13,17 +13,23 @@ else
 end
 
 class Pry
+
+  # do not use pry-doc if rbx is active
+  if !Object.const_defined?(:RUBY_ENGINE) || RUBY_ENGINE !~ /rbx/
+    self.config.has_pry_doc = true
+  end
+
   module MethodInfo
     @doc_cache = {}
     class << self; attr_reader :doc_cache; end
 
     # Convert a method object into the `Class#method` string notation.
-    #@param [Method, UnboundMethod] meth
-    #@return [String] The method in string receiver notation.
+    # @param [Method, UnboundMethod] meth
+    # @return [String] The method in string receiver notation.
     def self.receiver_notation_for(meth)
       if meth.owner.name
         "#{meth.owner.name}##{meth.name}"
-      else 
+      else
         "#{meth.owner.to_s[/#<.+?:(.+?)>/, 1]}.#{meth.name}"
       end
     end
@@ -40,7 +46,7 @@ class Pry
 
       # YARD thinks that some methods are on Object when
       # they're actually on Kernel; so try again on Object if Kernel fails.
-      if obj.nil? && meth.owner == Kernel 
+      if obj.nil? && meth.owner == Kernel
         obj = YARD::Registry.at("Object##{meth.name}")
       end
       obj
@@ -49,11 +55,13 @@ class Pry
     # Retrieve the YARD object that contains the method data.
     # @param [Method, UnboundMethod] meth The method object.
     # @return [YARD::CodeObjects::MethodObject] The YARD data for the method.
-    def self.yard_object_for(meth)
+    def self.info_for(meth)
       cache(meth)
       registry_lookup(meth)
     end
 
+    # Determine whether a method is an eval method.
+    # @return [Boolean] Whether the method is an eval method.
     def self.is_eval_method?(meth)
       file, _ = meth.source_location
       if file =~ /(\(.*\))|<.*>/
@@ -78,6 +86,6 @@ class Pry
       end
     end
   end
-end  
+end
 
 

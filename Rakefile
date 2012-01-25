@@ -1,12 +1,6 @@
 dlext = Config::CONFIG['DLEXT']
 direc = File.dirname(__FILE__)
 
-begin
-  require 'bones'
-rescue LoadError
-  abort '### Please install the "bones" gem ###'
-end
-
 PROJECT_NAME = "pry-doc"
 
 require 'rake/clean'
@@ -20,17 +14,20 @@ CLEAN.include("ext/**/*.#{dlext}", "ext/**/*.log", "ext/**/*.o",
 
 def apply_spec_defaults(s)
   s.name = PROJECT_NAME
-  s.summary = "FIX ME"
+  s.summary = "Provides YARD and extended documentation support for Pry"
   s.version = PryDoc::VERSION
   s.date = Time.now.strftime '%Y-%m-%d'
   s.author = "John Mair (banisterfiend)"
   s.email = 'jrmair@gmail.com'
   s.description = s.summary
+  s.add_dependency("yard","~>0.7.4")
+  s.add_dependency("pry",">=0.9.0")
+  s.add_development_dependency("bacon",">=1.1.0")
   s.require_path = 'lib'
   s.homepage = "http://banisterfiend.wordpress.com"
   s.has_rdoc = 'yard'
-  s.files = Dir["ext/**/extconf.rb", "ext/**/*.h", "ext/**/*.c", "lib/**/*.rb",
-                     "test/*.rb", "HISTORY", "README.md", "Rakefile"]
+  s.files = Dir["ext/**/extconf.rb", "ext/**/*.h", "ext/**/*.c", "lib/**/*",
+                     "test/*.rb", "HISTORY", "README.md", "Rakefile", ".gemtest"]
 end
 
 desc "run tests"
@@ -40,10 +37,10 @@ end
 
 namespace :ruby do
   spec = Gem::Specification.new do |s|
-    apply_spec_defaults(s)        
+    apply_spec_defaults(s)
     s.platform = Gem::Platform::RUBY
   end
-  
+
   Rake::GemPackageTask.new(spec) do |pkg|
     pkg.need_zip = false
     pkg.need_tar = false
@@ -64,5 +61,5 @@ task :pushgems => :gems do
     end
   end
 end
-              
+
 
