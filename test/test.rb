@@ -23,6 +23,20 @@ describe PryDoc do
         obj.source.should.not == nil
       end
     end
+
+    it 'should look up core (C) class method (by Method object)' do
+      Module.module_eval do
+        obj = Pry::MethodInfo.info_for(Dir.method(:glob))
+        obj.source.should.not == nil
+      end
+    end
+
+    it 'should look up core (C) class method (by UnboundMethod object)' do
+      Module.module_eval do
+        obj = Pry::MethodInfo.info_for(class << Dir; instance_method(:glob); end)
+        obj.source.should.not == nil
+      end
+    end
   end
 
   describe "eval methods" do

@@ -27,7 +27,7 @@ class Pry
     # @param [Method, UnboundMethod] meth
     # @return [String] The method in string receiver notation.
     def self.receiver_notation_for(meth)
-      if meth.owner.name
+      if meth.owner.ancestors.first == meth.owner
         "#{meth.owner.name}##{meth.name}"
       else
         "#{meth.owner.to_s[/#<.+?:(.+?)>/, 1]}.#{meth.name}"

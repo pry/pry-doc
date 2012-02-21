@@ -35,6 +35,14 @@ task :test do
   sh "bacon -k #{direc}/test/test.rb"
 end
 
+task :default => :test
+
+desc "reinstall gem"
+task :reinstall => :gems do
+  sh "gem uninstall pry-doc" rescue nil
+  sh "gem install #{direc}/pkg/pry-doc-#{PryDoc::VERSION}.gem"
+end
+
 namespace :ruby do
   spec = Gem::Specification.new do |s|
     apply_spec_defaults(s)
@@ -45,6 +53,13 @@ namespace :ruby do
     pkg.need_zip = false
     pkg.need_tar = false
   end
+
+  desc  "Generate gemspec file"
+  task :gemspec do
+    File.open("#{spec.name}.gemspec", "w") do |f|
+      f << spec.to_ruby
+    end
+  end
 end
 
 desc "build all platform gems at once"
@@ -52,6 +67,14 @@ task :gems => [:clean, :rmgems, "ruby:gem"]
 
 desc "remove all platform gems"
 task :rmgems => ["ruby:clobber_package"]
+
+desc "Build gemspec"
+task :gemspec => "ruby:gemspec"
+
+desc "Show version"
+task :version do
+  puts "PryDoc version: #{PryDoc::VERSION}"
+end
 
 desc "build and push latest gems"
 task :pushgems => :gems do
