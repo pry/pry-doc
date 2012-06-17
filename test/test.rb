@@ -4,13 +4,24 @@ require 'rubygems'
 require 'pry'
 require "#{direc}/../lib/pry-doc"
 require "#{direc}/test_helper"
+require "#{direc}/fake_gem_with_cext/lib/sample"
 require 'bacon'
 require 'set'
+require 'fileutils'
 
 puts "Testing pry-doc version #{PryDoc::VERSION}..."
 puts "Ruby version: #{RUBY_VERSION}"
 
 describe PryDoc do
+
+  before do
+    Pry::MethodInfo.doc_cache = ".temp_yardoc"
+  end
+
+  after do
+    FileUtils.rm_rf Pry::MethodInfo.doc_cache
+  end
+
   describe "core C methods" do
     it 'should look up core (C) methods' do
       obj = Pry::MethodInfo.info_for(method(:puts))
@@ -66,11 +77,51 @@ describe PryDoc do
     end
   end
 
+  describe "C ext methods" do
+    before do
+      # mock c extension method via setting source_location to nil
+      Sample.class_eval { def unlink; end }
+      @cext_method = Sample.instance_method(:unlink)
+      @cext_method.instance_eval { def source_location; nil; end }
+
+      # clear yard registry cache
+      YARD::Registry.clear
+    end
+
+    it "should lookup C ext methods" do
+      obj = Pry::MethodInfo.info_for(@cext_method)
+      obj.should.not == nil
+    end
+
+    it "should save yardoc registry to disk" do
+      File.exists?(Pry::MethodInfo.doc_cache).should == false
+
+      obj = Pry::MethodInfo.info_for(@cext_method)
+
+      File.exists?(Pry::MethodInfo.doc_cache).should == true
+    end
+
+    it "should be nil if gem dir could not be found" do
+      Pry::MethodInfo.instance_eval { def find_gem_dir(meth); nil; end }
+
+      obj = Pry::MethodInfo.info_for(@cext_method)
+      obj.should == nil
+    end
+
+    it "should be nil if gem dir found but c files not found" do
+      Pry::MethodInfo.instance_eval { def c_files_found?(gem_dir); false; end }
+
+      obj = Pry::MethodInfo.info_for(@cext_method)
+      obj.should == nil
+    end
+  end
+
   describe "C stdlib methods" do
     it "should return nil for C stdlib methods" do
       obj = Pry::MethodInfo.info_for(Readline.method(:readline))
       obj.should == nil
     end
   end
+
 end
 
