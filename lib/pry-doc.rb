@@ -6,12 +6,6 @@ direc = File.dirname(__FILE__)
 require "#{direc}/pry-doc/version"
 require "yard"
 
-if RUBY_VERSION =~ /1.9/
-  YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_19")
-else
-  YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_18")
-end
-
 class Pry
 
   # do not use pry-doc if rbx is active
@@ -20,8 +14,13 @@ class Pry
   end
 
   module MethodInfo
-    @doc_cache = {}
-    class << self; attr_reader :doc_cache; end
+
+    # doc_cache will contain both
+    #   3rd party gem yardocs +
+    #   ruby core yardocs included in pry-doc
+    @doc_cache = File.expand_path("~/.pry/yard-cache")
+
+    class << self; attr_accessor :doc_cache; end
 
     # Convert a method object into the `Class#method` string notation.
     # @param [Method, UnboundMethod] meth
@@ -71,15 +70,51 @@ class Pry
       end
     end
 
+    # Attempts to find the c source files if method belongs to a gem
+    # and use YARD to parse and cache the source files for display
+    #
+    # @param [Method, UnboundMethod] meth The method object.
+    def self.parse_and_cache_if_gem_cext(meth)
+      if gem_dir = find_gem_dir(meth)
+        if c_files_found?(gem_dir)
+          YARD.parse("#{gem_dir}/ext/**/*.c")
+          YARD::Registry.save(:merge, @doc_cache)
+        end
+      end
+    end
+
+    # @param [String] root directory path of gem that method belongs to
+    # @return [Boolean] true if c files exist?
+    def self.c_files_found?(gem_dir)
+      Dir.glob("#{gem_dir}/ext/**/*.c").count > 0
+    end
+
+    # @param [Method, UnboundMethod] meth The method object.
+    # @return [String] root directory path of gem that method belongs to,
+    #                  nil if could not be found
+    def self.find_gem_dir(meth)
+      owner_source_location, _ = WrappedModule.new(meth.owner).source_location
+      if owner_source_location
+        owner_source_location.split("/lib/").first
+      else
+        nil
+      end
+    end
+
     # Cache the file that holds the method or return immediately if file is
     # already cached. Return if the method cannot be cached -
-    # i.e is a C method.
+    # i.e is a C stdlib method.
     # @param [Method, UnboundMethod] meth The method object.
     def self.cache(meth)
       file, _ = meth.source_location
-      return if !file
+
       return if is_eval_method?(meth)
       return if cached?(meth)
+
+      if !file
+        parse_and_cache_if_gem_cext(meth)
+        return
+      end
 
       log.enter_level(Logger::FATAL) do
         YARD.parse(file)
@@ -88,4 +123,19 @@ class Pry
   end
 end
 
+YARD::Registry.single_object_db = false
+
+if File.exist?(Pry::MethodInfo.doc_cache)
+  YARD::Registry.load_yardoc(Pry::MethodInfo.doc_cache)
+else
+  if RUBY_VERSION =~ /1.9/
+    YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_19")
+    YARD::Registry.load_all
+    YARD::Registry.save(:merge, Pry::MethodInfo.doc_cache)
+  else
+    YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_18")
+    YARD::Registry.load_all
+    YARD::Registry.save(:merge, Pry::MethodInfo.doc_cache)
+  end
+end
 
