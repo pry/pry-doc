@@ -130,8 +130,12 @@ if File.exist?(Pry::MethodInfo.doc_cache)
 else
   if RUBY_VERSION =~ /1.9/
     YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_19")
+    YARD::Registry.load_all
+    YARD::Registry.save(:merge, Pry::MethodInfo.doc_cache)
   else
     YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_18")
+    YARD::Registry.load_all
+    YARD::Registry.save(:merge, Pry::MethodInfo.doc_cache)
   end
 end
 
