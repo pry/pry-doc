@@ -88,7 +88,6 @@ describe PryDoc do
     it "should save yardoc registry to disk" do
       sample_class_yard_file = "#{Pry::MethodInfo.doc_cache}/objects/Sample.dat"
       FileUtils.rm_f(sample_class_yard_file)
-      File.exists?(sample_class_yard_file).should == false
 
       obj = Pry::MethodInfo.info_for(@cext_method)
 
