@@ -4,13 +4,16 @@ require 'rubygems'
 require 'pry'
 require "#{direc}/../lib/pry-doc"
 require "#{direc}/test_helper"
+require "#{direc}/fake_gem_with_cext/lib/sample"
 require 'bacon'
 require 'set'
+require 'fileutils'
 
 puts "Testing pry-doc version #{PryDoc::VERSION}..."
 puts "Ruby version: #{RUBY_VERSION}"
 
 describe PryDoc do
+
   describe "core C methods" do
     it 'should look up core (C) methods' do
       obj = Pry::MethodInfo.info_for(method(:puts))
@@ -66,11 +69,38 @@ describe PryDoc do
     end
   end
 
+  describe "C ext methods" do
+    before do
+      # mock c extension method via setting source_location to nil
+      Sample.class_eval { def unlink; end }
+      @cext_method = Sample.instance_method(:unlink)
+      @cext_method.instance_eval { def source_location; nil; end }
+
+      # clear yard registry cache
+      YARD::Registry.clear
+    end
+
+    it "should lookup C ext methods" do
+      obj = Pry::MethodInfo.info_for(@cext_method)
+      obj.should.not == nil
+    end
+
+    it "should save yardoc registry to disk" do
+      sample_class_yard_file = "#{Pry::MethodInfo.doc_cache}/objects/Sample.dat"
+      FileUtils.rm_f(sample_class_yard_file)
+
+      obj = Pry::MethodInfo.info_for(@cext_method)
+
+      File.exists?(sample_class_yard_file).should == true
+    end
+  end
+
   describe "C stdlib methods" do
     it "should return nil for C stdlib methods" do
       obj = Pry::MethodInfo.info_for(Readline.method(:readline))
       obj.should == nil
     end
   end
+
 end
 
