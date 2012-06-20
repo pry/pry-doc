@@ -85,14 +85,6 @@ describe PryDoc do
       obj.should.not == nil
     end
 
-    it "should save yardoc registry to disk" do
-      sample_class_yard_file = "#{Pry::MethodInfo.doc_cache}/objects/Sample.dat"
-      FileUtils.rm_f(sample_class_yard_file)
-
-      obj = Pry::MethodInfo.info_for(@cext_method)
-
-      File.exists?(sample_class_yard_file).should == true
-    end
   end
 
   describe "C stdlib methods" do

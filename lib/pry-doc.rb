@@ -6,6 +6,12 @@ direc = File.dirname(__FILE__)
 require "#{direc}/pry-doc/version"
 require "yard"
 
+if RUBY_VERSION =~ /1.9/
+  YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_19")
+else
+  YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_18")
+end
+
 class Pry
 
   # do not use pry-doc if rbx is active
@@ -14,13 +20,6 @@ class Pry
   end
 
   module MethodInfo
-
-    # doc_cache will contain both
-    #   3rd party gem yardocs +
-    #   ruby core yardocs included in pry-doc
-    @doc_cache = File.expand_path("~/.pry/yard-cache")
-
-    class << self; attr_accessor :doc_cache; end
 
     # Convert a method object into the `Class#method` string notation.
     # @param [Method, UnboundMethod] meth
@@ -78,7 +77,6 @@ class Pry
       if gem_dir = find_gem_dir(meth)
         if c_files_found?(gem_dir)
           YARD.parse("#{gem_dir}/ext/**/*.c")
-          YARD::Registry.save(:merge, @doc_cache)
         end
       end
     end
@@ -123,19 +121,4 @@ class Pry
   end
 end
 
-YARD::Registry.single_object_db = false
-
-if File.exist?(Pry::MethodInfo.doc_cache)
-  YARD::Registry.load_yardoc(Pry::MethodInfo.doc_cache)
-else
-  if RUBY_VERSION =~ /1.9/
-    YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_19")
-    YARD::Registry.load_all
-    YARD::Registry.save(:merge, Pry::MethodInfo.doc_cache)
-  else
-    YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_18")
-    YARD::Registry.load_all
-    YARD::Registry.save(:merge, Pry::MethodInfo.doc_cache)
-  end
-end
 
