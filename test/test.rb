@@ -70,21 +70,39 @@ describe PryDoc do
   end
 
   describe "C ext methods" do
-    before do
-      # mock c extension method via setting source_location to nil
-      Sample.class_eval { def unlink; end }
-      @cext_method = Sample.instance_method(:unlink)
-      @cext_method.instance_eval { def source_location; nil; end }
 
-      # clear yard registry cache
+    before do
       YARD::Registry.clear
     end
 
     it "should lookup C ext methods" do
-      obj = Pry::MethodInfo.info_for(@cext_method)
+      meth = mock_cext_method(Sample.instance_method(:unlink))
+      obj = Pry::MethodInfo.info_for(meth)
       obj.should.not == nil
     end
 
+    it "should lookup aliased C ext methods" do
+      meth = mock_cext_method(Sample.instance_method(:remove))
+      obj = Pry::MethodInfo.info_for(meth)
+      obj.should.not == nil
+    end
+
+    it "should lookup C ext instance methods even when its owners don't have any ruby methods" do
+      meth = mock_cext_method(Sample::A::B.instance_method(:unlink))
+      Sample::A::B.class_eval { undef unlink }
+
+      obj = Pry::MethodInfo.info_for(meth)
+      obj.should.not == nil
+    end
+
+    it "should lookup C ext class methods even when its owners don't have any ruby methods" do
+      Sample::A::B.instance_eval { def unlink; end }
+      meth = mock_cext_method(Sample::A::B.method(:unlink))
+      Sample::A::B.instance_eval { undef unlink }
+
+      obj = Pry::MethodInfo.info_for(meth)
+      obj.should.not == nil
+    end
   end
 
   describe "C stdlib methods" do

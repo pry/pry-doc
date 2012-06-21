@@ -25,11 +25,28 @@ class Pry
     # @param [Method, UnboundMethod] meth
     # @return [String] The method in string receiver notation.
     def self.receiver_notation_for(meth)
-      if meth.owner.ancestors.first == meth.owner
-        "#{meth.owner.name}##{meth.name}"
+      method_name = orig_name(meth)
+
+      if is_singleton?(meth)
+        "#{meth.owner.to_s[/#<.+?:(.+?)>/, 1]}.#{method_name}"
       else
-        "#{meth.owner.to_s[/#<.+?:(.+?)>/, 1]}.#{meth.name}"
+        "#{meth.owner.name}##{method_name}"
       end
+    end
+
+    # Retrives original name of a method
+    # @param [Method, UnboundMethod] meth The method object.
+    # @return [String] The original name of method if aliased
+    #                  otherwise, it would be similar to current name
+    def self.orig_name(meth)
+      meth.to_s[/([^#.]+)>$/,1].to_sym
+    end
+
+    # Checks whether method is a singleton (i.e class method)
+    # @param [Method, UnboundMethod] meth
+    # @param [Boolean] true if singleton
+    def self.is_singleton?(meth)
+      meth.owner.ancestors.first != meth.owner
     end
 
     # Check whether the file containing the method is already cached.
@@ -91,7 +108,14 @@ class Pry
     # @return [String] root directory path of gem that method belongs to,
     #                  nil if could not be found
     def self.find_gem_dir(meth)
-      owner_source_location, _ = WrappedModule.new(meth.owner).source_location
+      owner = is_singleton?(meth) ? meth.receiver : meth.owner
+
+      begin
+        owner_source_location, _ =  WrappedModule.new(owner).source_location
+        break if owner_source_location != nil
+        owner = eval(owner.namespace_name)
+      end while !owner.nil?
+
       if owner_source_location
         owner_source_location.split("/lib/").first
       else
