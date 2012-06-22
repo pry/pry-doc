@@ -4,7 +4,7 @@ require 'rubygems'
 require 'pry'
 require "#{direc}/../lib/pry-doc"
 require "#{direc}/test_helper"
-require "#{direc}/fake_gem_with_cext/lib/sample"
+require "#{direc}/gem_with_cext/sample"
 require 'bacon'
 require 'set'
 require 'fileutils'
@@ -76,31 +76,22 @@ describe PryDoc do
     end
 
     it "should lookup C ext methods" do
-      meth = mock_cext_method(Sample.instance_method(:unlink))
-      obj = Pry::MethodInfo.info_for(meth)
+      obj = Pry::MethodInfo.info_for(Sample.instance_method(:unlink))
       obj.should.not == nil
     end
 
     it "should lookup aliased C ext methods" do
-      meth = mock_cext_method(Sample.instance_method(:remove))
-      obj = Pry::MethodInfo.info_for(meth)
+      obj = Pry::MethodInfo.info_for(Sample.instance_method(:remove))
       obj.should.not == nil
     end
 
     it "should lookup C ext instance methods even when its owners don't have any ruby methods" do
-      meth = mock_cext_method(Sample::A::B.instance_method(:unlink))
-      Sample::A::B.class_eval { undef unlink }
-
-      obj = Pry::MethodInfo.info_for(meth)
+      obj = Pry::MethodInfo.info_for(Sample::A::B.instance_method(:unlink))
       obj.should.not == nil
     end
 
     it "should lookup C ext class methods even when its owners don't have any ruby methods" do
-      Sample::A::B.instance_eval { def unlink; end }
-      meth = mock_cext_method(Sample::A::B.method(:unlink))
-      Sample::A::B.instance_eval { undef unlink }
-
-      obj = Pry::MethodInfo.info_for(meth)
+      obj = Pry::MethodInfo.info_for(Sample::A::B.method(:unlink))
       obj.should.not == nil
     end
   end

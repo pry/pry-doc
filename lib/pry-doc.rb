@@ -25,21 +25,27 @@ class Pry
     # @param [Method, UnboundMethod] meth
     # @return [String] The method in string receiver notation.
     def self.receiver_notation_for(meth)
-      method_name = orig_name(meth)
-
       if is_singleton?(meth)
-        "#{meth.owner.to_s[/#<.+?:(.+?)>/, 1]}.#{method_name}"
+        "#{meth.owner.to_s[/#<.+?:(.+?)>/, 1]}.#{meth.name}"
       else
-        "#{meth.owner.name}##{method_name}"
+        "#{meth.owner.name}##{meth.name}"
       end
     end
 
-    # Retrives original name of a method
+    # Retrives aliases of a method
     # @param [Method, UnboundMethod] meth The method object.
     # @return [String] The original name of method if aliased
     #                  otherwise, it would be similar to current name
-    def self.orig_name(meth)
-      meth.to_s[/([^#.]+)>$/,1].to_sym
+    def self.aliases(meth)
+      owner       = is_singleton?(meth) ? meth.receiver : meth.owner
+      method_type = is_singleton?(meth) ? :method : :instance_method
+
+      methods = Pry::Method.send(:all_from_common, owner, method_type, false).
+                            map { |m| m.instance_variable_get(:@method) }
+
+      methods.select { |m| owner.send(method_type,m.name) == owner.send(method_type,meth.name) }.
+              reject { |m| m.name == meth.name }.
+              map    { |m| owner.send(method_type,m.name) }
     end
 
     # Checks whether method is a singleton (i.e class method)
@@ -59,10 +65,14 @@ class Pry
     def self.registry_lookup(meth)
       obj = YARD::Registry.at(receiver_notation_for(meth))
 
-      # YARD thinks that some methods are on Object when
-      # they're actually on Kernel; so try again on Object if Kernel fails.
-      if obj.nil? && meth.owner == Kernel
-        obj = YARD::Registry.at("Object##{meth.name}")
+      if obj.nil?
+        if !(aliases = aliases(meth)).empty?
+          obj = YARD::Registry.at(receiver_notation_for(aliases.first))
+        elsif meth.owner == Kernel
+          # YARD thinks that some methods are on Object when
+          # they're actually on Kernel; so try again on Object if Kernel fails.
+          obj = YARD::Registry.at("Object##{meth.name}")
+        end
       end
       obj
     end
@@ -144,5 +154,4 @@ class Pry
     end
   end
 end
-
 

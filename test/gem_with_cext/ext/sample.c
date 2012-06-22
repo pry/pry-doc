@@ -1,9 +1,11 @@
+#include "ruby.h"
+
 static VALUE unlink(VALUE self)
 {
   return 1;
 }
 
-void init_sample(void)
+void Init_sample(void)
 {
   VALUE klass = rb_define_class("Sample", rb_cObject);
   VALUE A = rb_define_module_under(klass, "A");
