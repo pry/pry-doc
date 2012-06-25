@@ -71,10 +71,6 @@ describe PryDoc do
 
   describe "C ext methods" do
 
-    before do
-      YARD::Registry.clear
-    end
-
     it "should lookup C ext methods" do
       obj = Pry::MethodInfo.info_for(Sample.instance_method(:unlink))
       obj.should.not == nil
