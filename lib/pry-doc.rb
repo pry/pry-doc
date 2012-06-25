@@ -119,9 +119,10 @@ class Pry
       is_singleton?(meth) ? meth.receiver : meth.owner
     end
 
+    # FIXME: this is unnecessarily limited to ext/ and lib/ folders
     # @return [String] The root folder of a given gem directory.
     def self.gem_root(dir)
-      dir.split(/\/lib(?:\/|$)/).first
+      dir.split(/\/(?:lib|ext)(?:\/|$)/).first
     end
 
     # @param [Method, UnboundMethod] meth The method object.
