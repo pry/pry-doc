@@ -159,6 +159,10 @@ class Pry
         name.scan(/[A-Z][a-z]+/).map(&:downcase).join('_')
       when 2
         name.scan(/[A-Z][a-z]+/).map(&:downcase).join('_').sub("_", "-")
+      when 3
+        name.scan(/[A-Z][a-z]+/).map(&:downcase).join('-')
+      when 4
+        name
       else
         nil
       end
