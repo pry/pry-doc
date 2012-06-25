@@ -114,23 +114,73 @@ class Pry
       Dir.glob("#{gem_dir}/ext/**/*.c").count > 0
     end
 
+    # @return [Object] The host of the method (receiver or owner).
+    def self.method_host(meth)
+      is_singleton?(meth) ? meth.receiver : meth.owner
+    end
+
+    # @return [String] The root folder of a given gem directory.
+    def self.gem_root(dir)
+      dir.split(/\/lib(?:\/|$)/).first
+    end
+
     # @param [Method, UnboundMethod] meth The method object.
     # @return [String] root directory path of gem that method belongs to,
     #                  nil if could not be found
     def self.find_gem_dir(meth)
-      owner = is_singleton?(meth) ? meth.receiver : meth.owner
+      host = method_host(meth)
 
       begin
-        owner_source_location, _ =  WrappedModule.new(owner).source_location
+        owner_source_location, _ =  WrappedModule.new(host).source_location
         break if owner_source_location != nil
-        owner = eval(owner.namespace_name)
-      end while !owner.nil?
+        host = eval(host.namespace_name)
+      end while !host.nil?
 
       if owner_source_location
-        owner_source_location.split("/lib/").first
+        gem_root(owner_source_location)
+      else
+
+        # the WrappedModule approach failed, so try our backup approach
+        gem_dir_from_method(meth)
+      end
+    end
+
+    # Try to guess what the gem name will be based on the name of the module.
+    # We try three approaches here depending on the `guess` parameter.
+    # @param [String] name The name of the module.
+    # @param [Fixnum] guess The current guessing approach to use.
+    # @return [String, nil] The guessed gem name, or `nil` if out of guesses.
+    def self.guess_gem_name_from_module_name(name, guess)
+      case guess
+      when 0
+        name.downcase
+      when 1
+        name.scan(/[A-Z][a-z]+/).map(&:downcase).join('_')
+      when 2
+        name.scan(/[A-Z][a-z]+/).map(&:downcase).join('_').sub("_", "-")
       else
         nil
       end
+    end
+
+    # Try to recover the gem directory of a gem based on a method object.
+    # @param [Method, UnboundMethod] meth The method object.
+    # @return [String, nil] The located gem directory.
+    def self.gem_dir_from_method(meth)
+      guess = 0
+
+      host = method_host(meth)
+      root_module_name = host.name.split("::").first
+      while gem_name = guess_gem_name_from_module_name(root_module_name, guess)
+        matches = $LOADED_FEATURES.map { |v| File.dirname(v) }.grep Regexp.new(Regexp.escape(gem_name))
+        if matches.any?
+          return gem_root(matches.first)
+        else
+          guess += 1
+        end
+      end
+
+      nil
     end
 
     # Cache the file that holds the method or return immediately if file is
