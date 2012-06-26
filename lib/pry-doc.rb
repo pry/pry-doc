@@ -34,18 +34,18 @@ class Pry
 
     # Retrives aliases of a method
     # @param [Method, UnboundMethod] meth The method object.
-    # @return [String] The original name of method if aliased
-    #                  otherwise, it would be similar to current name
+    # @return [Array] The aliases of a method if it exists
+    #                 otherwise, return empty array
     def self.aliases(meth)
-      owner       = is_singleton?(meth) ? meth.receiver : meth.owner
+      host        = method_host(meth)
       method_type = is_singleton?(meth) ? :method : :instance_method
 
-      methods = Pry::Method.send(:all_from_common, owner, method_type, false).
+      methods = Pry::Method.send(:all_from_common, host, method_type, false).
                             map { |m| m.instance_variable_get(:@method) }
 
-      methods.select { |m| owner.send(method_type,m.name) == owner.send(method_type,meth.name) }.
+      methods.select { |m| host.send(method_type,m.name) == host.send(method_type,meth.name) }.
               reject { |m| m.name == meth.name }.
-              map    { |m| owner.send(method_type,m.name) }
+              map    { |m| host.send(method_type,m.name) }
     end
 
     # Checks whether method is a singleton (i.e class method)
@@ -136,7 +136,7 @@ class Pry
         host_source_location, _ =  WrappedModule.new(host).source_location
         break if host_source_location != nil
         host = eval(host.namespace_name)
-      end while !host.nil?
+      end while host
 
       # we want to exclude all source_locations that aren't gems (i.e
       # stdlib)

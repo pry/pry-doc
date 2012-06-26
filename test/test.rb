@@ -71,10 +71,6 @@ describe PryDoc do
 
   describe "C ext methods" do
 
-    before do
-      YARD::Registry.clear
-    end
-
     it "should lookup C ext methods" do
       obj = Pry::MethodInfo.info_for(Sample.instance_method(:unlink))
       obj.should.not == nil
@@ -100,6 +96,53 @@ describe PryDoc do
     it "should return nil for C stdlib methods" do
       obj = Pry::MethodInfo.info_for(Readline.method(:readline))
       obj.should == nil
+    end
+  end
+
+  describe ".aliases" do
+    it "should return empty array if method does not have any alias" do
+      aliases = Pry::MethodInfo.aliases(Sample.instance_method(:some_meth))
+      aliases.should == []
+    end
+
+    it "should return aliases of a (C) method" do
+      orig = Sample.instance_method(:unlink)
+      copy = Sample.instance_method(:remove)
+
+      aliases = Pry::MethodInfo.aliases(orig)
+      aliases.should == [copy]
+
+      aliases = Pry::MethodInfo.aliases(copy)
+      aliases.should == [orig]
+    end
+
+    it "should return aliases of a ruby method" do
+      C.class_eval { alias msg message }
+
+      orig = C.instance_method(:message)
+      copy = C.instance_method(:msg)
+
+      aliases = Pry::MethodInfo.aliases(orig)
+      aliases.should == [copy]
+
+      aliases = Pry::MethodInfo.aliases(copy)
+      aliases.should == [orig]
+    end
+
+    it "should return aliases of protected method" do
+      orig = Sample.instance_method(:unlink_1)
+      copy = Sample.instance_method(:remove_1)
+
+      aliases = Pry::MethodInfo.aliases(orig)
+      aliases.should == [copy]
+    end
+
+    it "should return aliases of private method" do
+      orig = Sample.instance_method(:unlink_2)
+      copy = Sample.instance_method(:remove_2)
+
+      aliases = Pry::MethodInfo.aliases(orig)
+      aliases.should == [copy]
     end
   end
 
