@@ -4,7 +4,7 @@ require 'rubygems'
 require 'pry'
 require "#{direc}/../lib/pry-doc"
 require "#{direc}/test_helper"
-require "#{direc}/gem_with_cext/sample"
+require "#{direc}/gem_with_cext/gems/sample"
 require 'bacon'
 require 'set'
 require 'fileutils'

@@ -137,7 +137,8 @@ class Pry
         host = eval(host.namespace_name)
       end while !host.nil?
 
-      # we want to exclude all source_locations that aren't gems (i.e stdlib)
+      # we want to exclude all source_locations that aren't gems (i.e
+      # stdlib)
       if host_source_location && host_source_location =~ %r{/gems/}
         gem_root(host_source_location)
       else
@@ -148,7 +149,7 @@ class Pry
     end
 
     # Try to guess what the gem name will be based on the name of the module.
-    # We try three approaches here depending on the `guess` parameter.
+    # We try a few approaches here depending on the `guess` parameter.
     # @param [String] name The name of the module.
     # @param [Fixnum] guess The current guessing approach to use.
     # @return [String, nil] The guessed gem name, or `nil` if out of guesses.
