@@ -103,6 +103,7 @@ class Pry
     def self.parse_and_cache_if_gem_cext(meth)
       if gem_dir = find_gem_dir(meth)
         if c_files_found?(gem_dir)
+          warn "Scanning and caching *.c files..."
           YARD.parse("#{gem_dir}/ext/**/*.c")
         end
       end
