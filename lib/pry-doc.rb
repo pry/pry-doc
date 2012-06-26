@@ -132,13 +132,14 @@ class Pry
       host = method_host(meth)
 
       begin
-        owner_source_location, _ =  WrappedModule.new(host).source_location
-        break if owner_source_location != nil
+        host_source_location, _ =  WrappedModule.new(host).source_location
+        break if host_source_location != nil
         host = eval(host.namespace_name)
       end while !host.nil?
 
-      if owner_source_location
-        gem_root(owner_source_location)
+      # we want to exclude all source_locations that aren't gems (i.e stdlib)
+      if host_source_location && host_source_location =~ %r{/gems/}
+        gem_root(host_source_location)
       else
 
         # the WrappedModule approach failed, so try our backup approach
@@ -177,8 +178,8 @@ class Pry
       host = method_host(meth)
       root_module_name = host.name.split("::").first
       while gem_name = guess_gem_name_from_module_name(root_module_name, guess)
-        matches = $LOADED_FEATURES.map { |v| File.dirname(v) }.grep Regexp.new(Regexp.escape(gem_name))
-        if matches.any?
+        matches = $LOAD_PATH.grep %r{/gems/#{gem_name}} if !gem_name.empty?
+        if matches && matches.any?
           return gem_root(matches.first)
         else
           guess += 1
