@@ -104,7 +104,7 @@ class Pry
       if gem_dir = find_gem_dir(meth)
         if c_files_found?(gem_dir)
           warn "Scanning and caching *.c files..."
-          YARD.parse("#{gem_dir}/ext/**/*.c")
+          YARD.parse("#{gem_dir}/**/*.c")
         end
       end
     end
@@ -112,7 +112,7 @@ class Pry
     # @param [String] root directory path of gem that method belongs to
     # @return [Boolean] true if c files exist?
     def self.c_files_found?(gem_dir)
-      Dir.glob("#{gem_dir}/ext/**/*.c").count > 0
+      Dir.glob("#{gem_dir}/**/*.c").count > 0
     end
 
     # @return [Object] The host of the method (receiver or owner).
