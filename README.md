@@ -1,19 +1,44 @@
 pry-doc
-===========
+=======
 
-(C) John Mair (banisterfiend) 2011
+(C) John Mair (banisterfiend) 2013
 
 _Provides YARD and extended documentation support for Pry_
 
 * Install the [gem](https://rubygems.org/gems/pry-doc): `gem install pry-doc`
-* Read the [documentation](http://rdoc.info/github/banister/pry-doc/master/file/README.md)
-* See the [source code](http://github.com/banister/pry-doc)
+* Read the [documentation](http://rdoc.info/github/pry/pry-doc/master/file/README.md)
+* See the [source code](http://github.com/pry/pry-doc)
 
 Example: Provide access to Ruby core documentation and source code from within Pry
 --------
 
-  show-doc puts
-  show-method puts
+    [1] pry(main)> show-doc puts
+
+    From: io.c (C Method):
+    Owner: Kernel
+    Visibility: private
+    Signature: puts(*arg1)
+    Number of lines: 3
+
+    Equivalent to
+
+        $stdout.puts(obj, ...)
+    [2] pry(main)> show-source puts
+
+    From: io.c (C Method):
+    Owner: Kernel
+    Visibility: private
+    Number of lines: 8
+
+    static VALUE
+    rb_f_puts(int argc, VALUE *argv, VALUE recv)
+    {
+        if (recv == rb_stdout) {
+        return rb_io_puts(argc, argv, recv);
+        }
+        return rb_funcall2(rb_stdout, rb_intern("puts"), argc, argv);
+    }
+    [3] pry(main)>
 
 Contact
 -------
@@ -24,9 +49,9 @@ Problems or questions contact me at [github](http://github.com/banister)
 License
 -------
 
-(The MIT License) 
+(The MIT License)
 
-Copyright (c) 2011 John Mair (banisterfiend)
+Copyright (c) 2013 John Mair (banisterfiend)
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
