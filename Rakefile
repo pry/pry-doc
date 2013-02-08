@@ -4,7 +4,7 @@ direc = File.dirname(__FILE__)
 PROJECT_NAME = "pry-doc"
 
 require 'rake/clean'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 require "#{direc}/lib/#{PROJECT_NAME}/version"
 
 CLOBBER.include("**/*.#{dlext}", "**/*~", "**/*#*", "**/*.log", "**/*.o")
@@ -49,7 +49,7 @@ namespace :ruby do
     s.platform = Gem::Platform::RUBY
   end
 
-  Rake::GemPackageTask.new(spec) do |pkg|
+  Gem::PackageTask.new(spec) do |pkg|
     pkg.need_zip = false
     pkg.need_tar = false
   end

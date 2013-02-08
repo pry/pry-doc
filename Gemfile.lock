@@ -1,0 +1,26 @@
+PATH
+  remote: .
+  specs:
+    pry-doc (0.4.5)
+      pry (>= 0.9.9.6)
+      yard (= 0.8.3)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    bacon (1.2.0)
+    coderay (1.0.8)
+    method_source (0.8.1)
+    pry (0.9.11.4)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
+    slop (3.4.3)
+    yard (0.8.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bacon (>= 1.1.0)
+  pry-doc!
