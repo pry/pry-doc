@@ -6,7 +6,10 @@ direc = File.dirname(__FILE__)
 require "#{direc}/pry-doc/version"
 require "yard"
 
-if RUBY_VERSION =~ /1.9/
+case RUBY_VERSION
+when /\A2\.0\z/
+  YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_20")
+when /\A1\.9\z/
   YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_19")
 else
   YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_18")
