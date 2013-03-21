@@ -6,6 +6,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Mair (banisterfiend)"]
+  s.cert_chain = ["gem-public_cert.pem"]
   s.date = "2013-03-21"
   s.description = "Provides YARD and extended documentation support for Pry"
   s.email = "jrmair@gmail.com"
@@ -13,6 +14,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://banisterfiend.wordpress.com"
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.23"
+  s.signing_key = "/.gem-private_key.pem"
   s.summary = "Provides YARD and extended documentation support for Pry"
 
   if s.respond_to? :specification_version then

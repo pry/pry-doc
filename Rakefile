@@ -29,7 +29,7 @@ def apply_spec_defaults(s)
   s.files = Dir["ext/**/extconf.rb", "ext/**/*.h", "ext/**/*.c", "lib/**/*",
                      "test/*.rb", "HISTORY", "README.md", "CHANGELOG.md",
                      "Rakefile", ".gemtest"]
-  s.signing_key = File.expand_path('~/.gem-private_key.pem')
+  s.signing_key = '/.gem-private_key.pem'
   s.cert_chain = ['gem-public_cert.pem']
 end
 
