@@ -3,7 +3,7 @@ direc = File.dirname(__FILE__)
 require 'rubygems'
 require 'pry'
 require "#{direc}/../lib/pry-doc"
-require "#{direc}/test_helper"
+require "#{direc}/helper"
 require "#{direc}/gem_with_cext/gems/sample"
 require 'bacon'
 require 'set'
