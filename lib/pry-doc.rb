@@ -7,9 +7,9 @@ require "#{direc}/pry-doc/version"
 require "yard"
 
 case RUBY_VERSION
-when /\A2\.0\z/
+when /\A2\.0/
   YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_20")
-when /\A1\.9\z/
+when /\A1\.9/
   YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_19")
 else
   YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_18")
