@@ -11,5 +11,6 @@ Pry Doc changelog
 * Rescanned docs for Ruby 1.9 (based on patchlevel 392)
 * Rescanned docs for Ruby 1.8 (based on patchlevel 370)
 * Implicitly fixed `show-doc require_relative` to the new rescan of 1.9 docs
+* Signed the gem with a cryptographic signature
 
 [yard648]: https://github.com/lsegal/yard/issues/648
