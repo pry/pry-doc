@@ -35,6 +35,7 @@ desc "run tests"
 task :test do
   sh "bacon -k #{direc}/spec/pry-doc_spec.rb"
 end
+task :spec => :test
 
 task :default => :test
 
