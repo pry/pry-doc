@@ -27,7 +27,8 @@ def apply_spec_defaults(s)
   s.homepage = "http://banisterfiend.wordpress.com"
   s.has_rdoc = 'yard'
   s.files = Dir["ext/**/extconf.rb", "ext/**/*.h", "ext/**/*.c", "lib/**/*",
-                     "test/*.rb", "HISTORY", "README.md", "Rakefile", ".gemtest"]
+                     "test/*.rb", "HISTORY", "README.md", "CHANGELOG.md",
+                     "Rakefile", ".gemtest"]
 end
 
 desc "run tests"
