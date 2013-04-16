@@ -22,6 +22,7 @@ def apply_spec_defaults(s)
   s.description = s.summary
   s.add_dependency("yard",">=0.8")
   s.add_dependency("pry",">=0.9")
+  s.add_development_dependency("latest_ruby")
   s.add_development_dependency("bacon",">=1.1.0")
   s.require_path = 'lib'
   s.homepage = "http://banisterfiend.wordpress.com"
