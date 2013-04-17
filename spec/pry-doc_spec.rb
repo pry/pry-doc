@@ -146,7 +146,6 @@ describe PryDoc do
     end
 
     it "finds well hidden docs from stdlib like BigDecimal docs" do
-      require 'bigdecimal'
       obj = Pry::MethodInfo.info_for(BigDecimal.instance_method(:finite?))
       obj.should.not == nil
     end
