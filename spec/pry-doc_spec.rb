@@ -93,12 +93,13 @@ describe PryDoc do
   end
 
   describe "C stdlib methods" do
-    it "should return nil for C stdlib methods" do
+    it "finds them" do
       obj = Pry::MethodInfo.info_for(Readline.method(:readline))
-      obj.should == nil
+      obj.should.not == nil
     end
 
-    it "finds well hidden docs from stdlib like BigDecimal docs" do
+    it "finds well hidden docs like BigDecimal docs" do
+      require 'bigdecimal'
       obj = Pry::MethodInfo.info_for(BigDecimal.instance_method(:finite?))
       obj.should.not == nil
     end
