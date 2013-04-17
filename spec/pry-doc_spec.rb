@@ -97,6 +97,11 @@ describe PryDoc do
       obj = Pry::MethodInfo.info_for(Readline.method(:readline))
       obj.should == nil
     end
+
+    it "finds well hidden docs from stdlib like BigDecimal docs" do
+      obj = Pry::MethodInfo.info_for(BigDecimal.instance_method(:finite?))
+      obj.should.not == nil
+    end
   end
 
   describe ".aliases" do
@@ -143,11 +148,6 @@ describe PryDoc do
 
       aliases = Pry::MethodInfo.aliases(orig)
       aliases.should == [copy]
-    end
-
-    it "finds well hidden docs from stdlib like BigDecimal docs" do
-      obj = Pry::MethodInfo.info_for(BigDecimal.instance_method(:finite?))
-      obj.should.not == nil
     end
   end
 
