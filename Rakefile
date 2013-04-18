@@ -3,6 +3,7 @@ direc = File.dirname(__FILE__)
 
 PROJECT_NAME = "pry-doc"
 
+require 'latest_ruby'
 require 'rake/clean'
 require 'rubygems/package_task'
 require "#{direc}/lib/#{PROJECT_NAME}/version"
@@ -90,4 +91,52 @@ task :pushgems => :gems do
   end
 end
 
+def download_ruby(ruby)
+  system "mkdir rubies"
+  system "wget #{ ruby.link } --directory-prefix=rubies --no-clobber"
+  File.join('rubies', ruby.filename)
+end
 
+def unpackage_ruby(path)
+  system "mkdir rubies/ruby"
+  system "tar xzvf #{ path } --directory=rubies/ruby"
+end
+
+def cd_into_ruby
+  Dir.chdir(Dir['rubies/ruby/*'].first)
+end
+
+def generate_yard
+  system %{
+    bash -c "paste <(find . -maxdepth 1 -name '*.c') <(find ext -name '*.c') |
+      xargs yardoc --no-output"
+  }
+end
+
+def replace_existing_docs(ver)
+  system "cp -r .yardoc/* ../../../lib/pry-doc/core_docs_#{ ver }"
+  Dir.chdir(File.expand_path(File.dirname(__FILE__)))
+end
+
+def clean_up
+  system "rm -rf rubies"
+end
+
+def generate_docs_for(ruby_ver, latest_ruby)
+  path = download_ruby(latest_ruby)
+  unpackage_ruby(path)
+  cd_into_ruby
+  generate_yard
+  replace_existing_docs(ruby_ver)
+  clean_up
+end
+
+desc "Generate the latest Ruby 1.9 docs"
+task "gen19" do
+  generate_docs_for('19', Latest.ruby19)
+end
+
+desc "Generate the latest Ruby 2.0 docs"
+task "gen20" do
+  generate_docs_for('20', Latest.ruby20)
+end
