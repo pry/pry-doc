@@ -40,7 +40,7 @@ class Pry
     # @return [Array] The aliases of a method if it exists
     #                 otherwise, return empty array
     def self.aliases(meth)
-      host        = method_host(meth)
+      host        = meth.owner
       method_type = is_singleton?(meth) ? :method : :instance_method
 
       methods = Pry::Method.send(:all_from_common, host, method_type, false).
@@ -120,7 +120,7 @@ class Pry
 
     # @return [Object] The host of the method (receiver or owner).
     def self.method_host(meth)
-      is_singleton?(meth) ? meth.receiver : meth.owner
+      is_singleton?(meth) && Module === meth.receiver ? meth.receiver : meth.owner
     end
 
     # FIXME: this is unnecessarily limited to ext/ and lib/ folders
@@ -138,6 +138,7 @@ class Pry
       begin
         host_source_location, _ =  WrappedModule.new(host).source_location
         break if host_source_location != nil
+        return unless host.name
         host = eval(host.namespace_name)
       end while host
 
@@ -181,6 +182,7 @@ class Pry
       guess = 0
 
       host = method_host(meth)
+      return unless host.name
       root_module_name = host.name.split("::").first
       while gem_name = guess_gem_name_from_module_name(root_module_name, guess)
         matches = $LOAD_PATH.grep %r{/gems/#{gem_name}} if !gem_name.empty?
