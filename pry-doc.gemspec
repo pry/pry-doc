@@ -13,8 +13,8 @@ Gem::Specification.new do |s|
   s.homepage = "https://github.com/pry/pry-doc"
   s.license = 'MIT'
 
-  s.cert_chain = ["gem-public_cert.pem"]
-  s.signing_key = "/.gem-private_key.pem"
+  s.cert_chain = ["cert/kyrylo@gmail.com.cer.pem"]
+  s.signing_key = File.expand_path "~/.gem/keys/kyrylo@gmail.com.key.pem"
 
   s.require_paths = ["lib"]
   s.files = `git ls-files`.split("\n")
