@@ -4,7 +4,7 @@ Pry Doc changelog
 ### v0.4.6 (May 19, 2013)
 
 * Added new docs for Ruby 1.9 and Ruby 2.0. For example, now you can execute
-  `pry-doc BigDecimal` and feel a little bit more happy.
+  `show-doc BigDecimal` and feel a little bit more happy.
 * Fixed error message when trying to `show-doc` non-module singleton methods (like
   top-level methods `include`, `private`, `public`, etc.)
 
