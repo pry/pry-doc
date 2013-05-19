@@ -44,7 +44,7 @@ describe PryDoc do
 
   describe "eval methods" do
     it 'should return nil for eval methods' do
-      eval("def hello; end")
+      TOPLEVEL_BINDING.eval("def hello; end")
       obj = Pry::MethodInfo.info_for(method(:hello))
       obj.should == nil
     end
