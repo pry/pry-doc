@@ -150,6 +150,15 @@ describe PryDoc do
       aliases = Pry::MethodInfo.aliases(orig)
       aliases.should == [copy]
     end
+
+    it 'does not error when given a singleton method' do
+      c = Class.new do
+        def self.my_method; end
+      end
+
+      lambda { Pry::MethodInfo.aliases(c.method(:my_method)) }.should.not.raise NameError
+    end
+
   end
 
   if Pry::Helpers::BaseHelpers.mri_18?
@@ -182,4 +191,3 @@ describe PryDoc do
   end
 
 end
-

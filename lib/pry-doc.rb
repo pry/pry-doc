@@ -40,7 +40,7 @@ class Pry
     # @return [Array] The aliases of a method if it exists
     #                 otherwise, return empty array
     def self.aliases(meth)
-      host        = meth.owner
+      host        = is_singleton?(meth) ? meth.receiver : meth.owner
       method_type = is_singleton?(meth) ? :method : :instance_method
 
       methods = Pry::Method.send(:all_from_common, host, method_type, false).
@@ -217,4 +217,3 @@ class Pry
     end
   end
 end
-
