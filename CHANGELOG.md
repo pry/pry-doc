@@ -1,6 +1,13 @@
 Pry Doc changelog
 =================
 
+### v0.5.0 (December 25, 2013)
+
+* **Important:** added support for Ruby 2.1.0. The docs are super fresh!
+
+* Rescanned docs for Ruby 1.9.3 (based on patchlevel 484)
+* Rescanned docs for Ruby 2.0.0 (based on patchlevel 353)
+
 ### v0.4.6 (May 19, 2013)
 
 * Added new docs for Ruby 1.9 and Ruby 2.0. For example, now you can execute
