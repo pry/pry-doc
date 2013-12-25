@@ -6,13 +6,24 @@ direc = File.dirname(__FILE__)
 require "#{direc}/pry-doc/version"
 require "yard"
 
+module PryDoc
+
+  def self.load_yardoc(version)
+    path = "#{File.dirname(__FILE__)}/pry-doc/core_docs_#{ version }"
+    YARD::Registry.load_yardoc(path)
+  end
+
+end
+
 case RUBY_VERSION
+when /\A2\.1/
+  PryDoc.load_yardoc('21')
 when /\A2\.0/
-  YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_20")
+  PryDoc.load_yardoc('20')
 when /\A1\.9/
-  YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_19")
+  PryDoc.load_yardoc('19')
 else
-  YARD::Registry.load_yardoc("#{File.dirname(__FILE__)}/pry-doc/core_docs_18")
+  PryDoc.load_yardoc('18')
 end
 
 class Pry
