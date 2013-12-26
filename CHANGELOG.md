@@ -1,6 +1,12 @@
 Pry Doc changelog
 =================
 
+### v0.5.1 (December 26, 2013)
+
+* **Important:** previous version `v0.5.0` does _not_ support Ruby 2.1.0. This
+  version does!
+* Pry Doc has a logo now (embedded in the README)
+
 ### v0.5.0 (December 25, 2013)
 
 * **Important:** added support for Ruby 2.1.0. The docs are super fresh!
