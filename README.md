@@ -26,11 +26,11 @@ Pry Doc extends two core Pry commands: `show-doc` and `show-source` (aliased as
 For example, in vanilla Pry it’s impossible to get the documentation for the
 `loop` method (it’s a method, by the way). However, Pry Doc solves that problem.
 
-![show-source][show-source]
+![show-source][show-doc]
 
 Let's check the source code of the `loop` method.
 
-![show-doc][show-doc]
+![show-doc][show-source]
 
 Generally speaking, you can retrieve most of the MRI documentation and
 accompanying source code. Pry Doc is also smart enough to get any documentation
