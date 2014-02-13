@@ -34,7 +34,7 @@ Let's check the source code of the `loop` method.
 
 Generally speaking, you can retrieve most of the MRI documentation and
 accompanying source code. Pry Doc is also smart enough to get any documentation
-for methods and class implemented in C.
+for methods and classes implemented in C.
 
 Limitations
 -----------
