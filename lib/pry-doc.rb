@@ -36,12 +36,15 @@ class Pry
     # Convert a method object into the `Class#method` string notation.
     # @param [Method, UnboundMethod] meth
     # @return [String] The method in string receiver notation.
+    # @note This mess is needed in order to support all the modern Rubies. YOU
+    #   must figure out a better way to distinguish between class methods and
+    #   instance methods.
     def self.receiver_notation_for(meth)
-      if is_singleton?(meth)
-        "#{meth.owner.to_s[/#<.+?:(.+?)>/, 1]}.#{meth.name}"
-      else
-        "#{meth.owner.name}##{meth.name}"
-      end
+      match = meth.inspect.match(/\A#<(?:Unbound)?Method: (.+)([#\.].+)>\z/)
+      owner = meth.owner.to_s.sub(/#<.+?:(.+?)>/, '\1')
+      name = match[2]
+      name.sub!('#', '.') if match[1] =~ /\A#<Class:/
+      owner + name
     end
 
     # Retrives aliases of a method
@@ -64,7 +67,7 @@ class Pry
     # @param [Method, UnboundMethod] meth
     # @param [Boolean] true if singleton
     def self.is_singleton?(meth)
-      meth.owner.ancestors.first != meth.owner
+      receiver_notation_for(meth).include?('.')
     end
 
     # Check whether the file containing the method is already cached.
@@ -76,7 +79,6 @@ class Pry
 
     def self.registry_lookup(meth)
       obj = YARD::Registry.at(receiver_notation_for(meth))
-
       if obj.nil?
         if !(aliases = aliases(meth)).empty?
           obj = YARD::Registry.at(receiver_notation_for(aliases.first))
