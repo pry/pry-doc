@@ -41,7 +41,6 @@ Limitations
 
 Pry Doc supports the following Rubies:
 
-* MRI 1.8
 * MRI 1.9
 * MRI 2.0
 * MRI 2.1
