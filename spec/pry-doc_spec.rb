@@ -8,6 +8,7 @@ require "#{direc}/gem_with_cext/gems/sample"
 require 'bacon'
 require 'set'
 require 'fileutils'
+require 'readline'
 
 puts "Testing pry-doc version #{PryDoc::VERSION}..."
 puts "Ruby version: #{RUBY_VERSION}"
