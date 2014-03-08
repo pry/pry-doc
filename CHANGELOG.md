@@ -1,6 +1,14 @@
 Pry Doc changelog
 =================
 
+### v0.6.0 (March 8, 2014)
+
+* **Important:** dropped Ruby 1.8.7 support.
+* Fixed (sort of [#19](https://github.com/pry/pry-doc/pull/19)) "Scanning and caching *.c files..." for show-doc Kernel.is_a?
+* Rescanned docs for Ruby 2.0 (based on patchlevel 484)
+* Rescanned docs for Ruby 2.1
+* Removed the gem certificate
+
 ### v0.5.1 (December 26, 2013)
 
 * **Important:** previous version `v0.5.0` does _not_ support Ruby 2.1.0. This
