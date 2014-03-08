@@ -179,22 +179,10 @@ describe PryDoc do
     end
   end
 
-  if Pry::Helpers::BaseHelpers.mri_18?
-    describe "1.8 specific docs" do
-      it "finds Array#indexes" do
-        obj = Pry::MethodInfo.info_for(Array.instance_method(:indexes))
-        obj.should.not == nil
-      end
-    end
-  end
-
-  # Ruby 1.9 and higher.
-  if !Pry::Helpers::BaseHelpers.mri_18?
-    describe "1.9 and higher specific docs" do
-      it "finds Kernel#require_relative" do
-        obj = Pry::MethodInfo.info_for(Kernel.instance_method(:require_relative))
-        obj.should.not == nil
-      end
+  describe "1.9 and higher specific docs" do
+    it "finds Kernel#require_relative" do
+      obj = Pry::MethodInfo.info_for(Kernel.instance_method(:require_relative))
+      obj.should.not == nil
     end
   end
 

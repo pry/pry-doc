@@ -20,10 +20,8 @@ when /\A2\.1/
   PryDoc.load_yardoc('21')
 when /\A2\.0/
   PryDoc.load_yardoc('20')
-when /\A1\.9/
-  PryDoc.load_yardoc('19')
 else
-  PryDoc.load_yardoc('18')
+  PryDoc.load_yardoc('19')
 end
 
 class Pry
