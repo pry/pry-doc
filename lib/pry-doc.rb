@@ -137,7 +137,9 @@ class Pry
     # FIXME: this is unnecessarily limited to ext/ and lib/ folders
     # @return [String] The root folder of a given gem directory.
     def self.gem_root(dir)
-      dir.split(/\/(?:lib|ext)(?:\/|$)/).first
+      if index = dir.rindex(/\/(?:lib|ext)(?:\/|$)/)
+        dir[0..index-1]
+      end
     end
 
     # @param [Method, UnboundMethod] meth The method object.

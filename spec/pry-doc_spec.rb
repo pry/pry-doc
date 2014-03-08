@@ -158,7 +158,25 @@ describe PryDoc do
 
       lambda { Pry::MethodInfo.aliases(c.method(:my_method)) }.should.not.raise NameError
     end
+  end
 
+  describe ".gem_root" do
+    it "should return the path to the gem" do
+      path = Pry::WrappedModule.new(Sample).source_location[0]
+
+      Pry::MethodInfo.gem_root(path).should ==
+        File.expand_path("gem_with_cext/gems", direc)
+    end
+
+    it "should not be fooled by a parent 'lib' or 'ext' dir" do
+      path = "/foo/.rbenv/versions/1.9.3-p429/lib/ruby/gems/"\
+             "1.9.1/gems/activesupport-4.0.2/lib/active_support/"\
+             "core_ext/kernel/reporting.rb"
+
+      Pry::MethodInfo.gem_root(path).should ==
+        "/foo/.rbenv/versions/1.9.3-p429/lib/ruby/"\
+        "gems/1.9.1/gems/activesupport-4.0.2"
+    end
   end
 
   if Pry::Helpers::BaseHelpers.mri_18?
