@@ -20,8 +20,8 @@ DESCR
   s.require_paths = ["lib"]
   s.files = `git ls-files`.split("\n")
 
-  s.add_dependency 'yard', ">= 0.8"
-  s.add_dependency 'pry', ">= 0.9"
-  s.add_development_dependency 'latest_ruby', ">= 0"
-  s.add_development_dependency 'bacon', ">= 1.1.0"
+  s.add_dependency 'yard', "~> 0.8"
+  s.add_dependency 'pry', "~> 0.9"
+  s.add_development_dependency 'latest_ruby', "~> 0.0"
+  s.add_development_dependency 'bacon', "~> 1.1"
 end
