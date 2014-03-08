@@ -1,5 +1,3 @@
-# -*- encoding: utf-8 -*-
-
 require './lib/pry-doc/version.rb'
 
 Gem::Specification.new do |s|
@@ -12,9 +10,6 @@ Gem::Specification.new do |s|
   s.description = s.summary
   s.homepage = "https://github.com/pry/pry-doc"
   s.license = 'MIT'
-
-  s.cert_chain = ["cert/kyrylo@gmail.com.cer.pem"]
-  s.signing_key = File.expand_path "~/.gem/keys/kyrylo@gmail.com.key.pem"
 
   s.require_paths = ["lib"]
   s.files = `git ls-files`.split("\n")
