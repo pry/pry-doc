@@ -4,7 +4,7 @@
 direc = File.dirname(__FILE__)
 
 require "yard"
-require 'ruby_core_docs'
+require 'ruby-core-docs'
 
 class Pry
 
