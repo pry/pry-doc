@@ -12,7 +12,6 @@ Pry Doc is a Pry REPL plugin. It provides extended documentation support for the
 REPL by means of improving the `show-doc` and `show-source` commands. With help
 of the plugin the commands are be able to display the source code and the docs
 of Ruby methods and classes implemented in C.
-documentation
 }
 
   s.require_paths = ["lib"]
