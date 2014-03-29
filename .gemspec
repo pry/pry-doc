@@ -21,6 +21,8 @@ of Ruby methods and classes implemented in C.
   s.add_dependency 'pry',  "~> 0.9"
 
   # converts "2.1.1" to "2.1"
-  ruby_rough_version = RUBY_VERSION.split('.')[0..1].join('.')
+  ruby_rough_version = RUBY_VERSION.split('.').first(2).join('.')
+  
+  # The pregenerated YARD docs of Ruby's C-code for your version of Ruby...
   s.add_dependency 'ruby-core-docs', "~> #{ruby_rough_version}"
 end

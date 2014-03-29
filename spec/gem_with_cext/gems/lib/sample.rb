@@ -3,16 +3,16 @@ class Sample
   def some_meth; end
 
   # aliasing a C method
-  alias :remove :unlink
+  alias :bmethod :amethod
 
   protected
 
-  def unlink_1; end
-  alias :remove_1 :unlink_1
+  def amethod_1; end
+  alias :bmethod_1 :amethod_1
 
   private
 
-  def unlink_2; end
+  def amethod_2; end
 
-  alias :remove_2 :unlink_2
+  alias :bmethod_2 :amethod_2
 end
