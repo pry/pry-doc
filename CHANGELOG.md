@@ -1,9 +1,10 @@
 Pry Doc changelog
 =================
 
-### v0.7.0 (March 26, 2014)
+### v0.7.0 (April 1, 2014)
 
-* Streamlined and optimized the package (no longer includes YARD documentation, but depends the `ruby-core-docs` gem for your Ruby version's documentation.)
+* Streamlined and optimized the package (no longer includes YARD documentation,
+  but depends the `ruby-core-docs` gem for your Ruby version's documentation.)
 
 ### v0.6.0 (March 8, 2014)
 
