@@ -2,9 +2,9 @@ Gem::Specification.new do |s|
   s.name = "pry-doc"
   s.version = File.read "VERSION"
 
-  s.authors     = ["John Mair (banisterfiend)"]
-  s.email       = ["jrmair@gmail.com"]
-  s.summary     = 'Provides YARD and extended documentation support for Pry'
+  s.authors     = ["John Mair (banisterfiend)", "Kyrylo Silin", "Chris Gahan"]
+  s.email       = ["jrmair@gmail.com", "silin@kyrylo.org", "chris@ill-logic.com"]
+  s.summary     = 'Extended documentation for Pry (Ruby C methods, on-the-fly documentation generation)'
   s.homepage    = "https://github.com/pry/pry-doc"
   s.license     = 'MIT'
   s.description = %{
@@ -20,9 +20,6 @@ of Ruby methods and classes implemented in C.
   s.add_dependency 'yard', "~> 0.8"
   s.add_dependency 'pry',  "~> 0.9"
 
-  # converts "2.1.1" to "2.1"
-  ruby_rough_version = RUBY_VERSION.split('.').first(2).join('.')
-  
   # The pregenerated YARD docs of Ruby's C-code for your version of Ruby...
-  s.add_dependency 'ruby-core-docs', "~> #{ruby_rough_version}"
+  s.add_dependency 'ruby-core-docs'
 end
