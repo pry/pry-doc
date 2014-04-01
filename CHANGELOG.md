@@ -3,7 +3,9 @@ Pry Doc changelog
 
 ### v0.7.1 (April 1, 2014)
 
-* Changed the way the gem for your Ruby version is found.
+* Changed the way the gem for your Ruby version is found. The previous version
+  (v0.7.0) has had only docs for Ruby 2.1.1 and been yanked from RubyGems
+  servers.
 
 ### v0.7.0 (April 1, 2014)
 
