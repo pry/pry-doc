@@ -1,16 +1,14 @@
 Pry Doc changelog
 =================
 
-### v0.7.1 (April 1, 2014)
+### v0.8.0
 
-* Changed the way the gem for your Ruby version is found. The previous version
-  (v0.7.0) has had only docs for Ruby 2.1.1 and been yanked from RubyGems
-  servers.
+* Reverted to 0.6.0 approach for packaging Ruby core docs.
 
 ### v0.7.0 (April 1, 2014)
 
-* Streamlined and optimized the package (no longer includes YARD documentation,
-  but depends the `ruby-core-docs` gem for your Ruby version's documentation.)
+* 0.7.0 tried a new approach to packaging Ruby core docs, which turned out to
+  have issues with cross-version compatibility. It's since been yanked.
 
 ### v0.6.0 (March 8, 2014)
 

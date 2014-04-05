@@ -1,30 +1,19 @@
-###########################################################################
+direc = File.dirname(__FILE__)
 
-SPEC_DIR = File.dirname(__FILE__)
-
-###########################################################################
-
+require 'rubygems'
 require 'pry'
-require "#{SPEC_DIR}/../lib/pry-doc"
-
-###########################################################################
-## Setup the environment
-
+require "#{direc}/../lib/pry-doc"
+require "#{direc}/helper"
+require "#{direc}/gem_with_cext/gems/sample"
 require 'bacon'
 require 'set'
+require 'fileutils'
 require 'readline'
 
-# Build the C extension
-system("cd #{SPEC_DIR}/gem_with_cext/gems/ext/ && ruby extconf.rb && make")
-require "#{SPEC_DIR}/gem_with_cext/gems/sample"
+puts "Testing pry-doc version #{PryDoc::VERSION}..."
+puts "Ruby version: #{RUBY_VERSION}"
 
-class C
-  def message; end
-end
-
-###########################################################################
-
-describe "pry-doc" do
+describe PryDoc do
 
   describe "core C methods" do
     it 'should look up core (C) methods' do
@@ -54,7 +43,6 @@ describe "pry-doc" do
     end
   end
 
-
   describe "eval methods" do
     it 'should return nil for eval methods' do
       TOPLEVEL_BINDING.eval("def hello; end")
@@ -62,7 +50,6 @@ describe "pry-doc" do
       obj.should == nil
     end
   end
-
 
   describe "pure ruby methods" do
     it 'should look up ruby methods' do
@@ -76,7 +63,6 @@ describe "pry-doc" do
     end
   end
 
-
   describe "Ruby stdlib methods" do
     it "should look up ruby stdlib method" do
       obj = Pry::MethodInfo.info_for(Set.instance_method(:union))
@@ -84,29 +70,28 @@ describe "pry-doc" do
     end
   end
 
-
   describe "C ext methods" do
+
     it "should lookup C ext methods" do
-      obj = Pry::MethodInfo.info_for(Sample.instance_method(:amethod))
+      obj = Pry::MethodInfo.info_for(Sample.instance_method(:unlink))
       obj.should.not == nil
     end
 
     it "should lookup aliased C ext methods" do
-      obj = Pry::MethodInfo.info_for(Sample.instance_method(:bmethod))
+      obj = Pry::MethodInfo.info_for(Sample.instance_method(:remove))
       obj.should.not == nil
     end
 
     it "should lookup C ext instance methods even when its owners don't have any ruby methods" do
-      obj = Pry::MethodInfo.info_for(Sample::A::B.instance_method(:amethod))
+      obj = Pry::MethodInfo.info_for(Sample::A::B.instance_method(:unlink))
       obj.should.not == nil
     end
 
     it "should lookup C ext class methods even when its owners don't have any ruby methods" do
-      obj = Pry::MethodInfo.info_for(Sample::A::B.method(:amethod))
+      obj = Pry::MethodInfo.info_for(Sample::A::B.method(:unlink))
       obj.should.not == nil
     end
   end
-
 
   describe "C stdlib methods" do
     it "finds them" do
@@ -121,7 +106,6 @@ describe "pry-doc" do
     end
   end
 
-
   describe ".aliases" do
     it "should return empty array if method does not have any alias" do
       aliases = Pry::MethodInfo.aliases(Sample.instance_method(:some_meth))
@@ -129,8 +113,8 @@ describe "pry-doc" do
     end
 
     it "should return aliases of a (C) method" do
-      orig = Sample.instance_method(:amethod)
-      copy = Sample.instance_method(:bmethod)
+      orig = Sample.instance_method(:unlink)
+      copy = Sample.instance_method(:remove)
 
       aliases = Pry::MethodInfo.aliases(orig)
       aliases.should == [copy]
@@ -153,16 +137,16 @@ describe "pry-doc" do
     end
 
     it "should return aliases of protected method" do
-      orig = Sample.instance_method(:amethod_1)
-      copy = Sample.instance_method(:bmethod_1)
+      orig = Sample.instance_method(:unlink_1)
+      copy = Sample.instance_method(:remove_1)
 
       aliases = Pry::MethodInfo.aliases(orig)
       aliases.should == [copy]
     end
 
     it "should return aliases of private method" do
-      orig = Sample.instance_method(:amethod_2)
-      copy = Sample.instance_method(:bmethod_2)
+      orig = Sample.instance_method(:unlink_2)
+      copy = Sample.instance_method(:remove_2)
 
       aliases = Pry::MethodInfo.aliases(orig)
       aliases.should == [copy]
@@ -177,13 +161,12 @@ describe "pry-doc" do
     end
   end
 
-
   describe ".gem_root" do
     it "should return the path to the gem" do
       path = Pry::WrappedModule.new(Sample).source_location[0]
 
       Pry::MethodInfo.gem_root(path).should ==
-        File.expand_path("gem_with_cext/gems", SPEC_DIR)
+        File.expand_path("gem_with_cext/gems", direc)
     end
 
     it "should not be fooled by a parent 'lib' or 'ext' dir" do
@@ -197,7 +180,6 @@ describe "pry-doc" do
     end
   end
 
-
   describe "1.9 and higher specific docs" do
     it "finds Kernel#require_relative" do
       obj = Pry::MethodInfo.info_for(Kernel.instance_method(:require_relative))
@@ -205,10 +187,9 @@ describe "pry-doc" do
     end
   end
 
-
   # For the time being, Pry doesn't define `mri_20?` helper method.
-  if RUBY_VERSION =~ /^2\./ && RbConfig::CONFIG['ruby_install_name'] == 'ruby'
-    describe "2.x specific specs" do
+  if RUBY_VERSION =~ /2.0/ && RbConfig::CONFIG['ruby_install_name'] == 'ruby'
+    describe "2.0 specific docs" do
       it "finds Module#refine" do
         obj = Pry::MethodInfo.info_for(Module.instance_method(:refine))
         obj.should.not == nil
