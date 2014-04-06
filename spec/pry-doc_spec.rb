@@ -73,7 +73,7 @@ describe PryDoc do
   describe "C ext methods" do
 
     it "should lookup C ext methods" do
-      obj = Pry::MethodInfo.info_for(Sample.instance_method(:unlink))
+      obj = Pry::MethodInfo.info_for(Sample.instance_method(:gleezor))
       obj.should.not == nil
     end
 
@@ -83,12 +83,12 @@ describe PryDoc do
     end
 
     it "should lookup C ext instance methods even when its owners don't have any ruby methods" do
-      obj = Pry::MethodInfo.info_for(Sample::A::B.instance_method(:unlink))
+      obj = Pry::MethodInfo.info_for(Sample::A::B.instance_method(:gleezor))
       obj.should.not == nil
     end
 
     it "should lookup C ext class methods even when its owners don't have any ruby methods" do
-      obj = Pry::MethodInfo.info_for(Sample::A::B.method(:unlink))
+      obj = Pry::MethodInfo.info_for(Sample::A::B.method(:gleezor))
       obj.should.not == nil
     end
   end
@@ -113,7 +113,7 @@ describe PryDoc do
     end
 
     it "should return aliases of a (C) method" do
-      orig = Sample.instance_method(:unlink)
+      orig = Sample.instance_method(:gleezor)
       copy = Sample.instance_method(:remove)
 
       aliases = Pry::MethodInfo.aliases(orig)
@@ -137,7 +137,7 @@ describe PryDoc do
     end
 
     it "should return aliases of protected method" do
-      orig = Sample.instance_method(:unlink_1)
+      orig = Sample.instance_method(:gleezor_1)
       copy = Sample.instance_method(:remove_1)
 
       aliases = Pry::MethodInfo.aliases(orig)
@@ -145,7 +145,7 @@ describe PryDoc do
     end
 
     it "should return aliases of private method" do
-      orig = Sample.instance_method(:unlink_2)
+      orig = Sample.instance_method(:gleezor_2)
       copy = Sample.instance_method(:remove_2)
 
       aliases = Pry::MethodInfo.aliases(orig)
