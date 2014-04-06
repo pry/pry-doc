@@ -1,14 +1,13 @@
 Pry Doc changelog
 =================
 
-### v0.8.0
+```
+Notification
 
-* Reverted to 0.6.0 approach for packaging Ruby core docs.
-
-### v0.7.0 (April 1, 2014)
-
-* 0.7.0 tried a new approach to packaging Ruby core docs, which turned out to
-  have issues with cross-version compatibility. It's since been yanked.
+Tried a new approach to packaging Ruby core docs, which turned out to
+have issues with cross-version compatibility. It's since been yanked. Reverted
+to 0.6.0 approach for packaging Ruby core docs.
+```
 
 ### v0.6.0 (March 8, 2014)
 
