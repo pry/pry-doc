@@ -1,9 +1,10 @@
 Pry Doc changelog
 =================
 
-### v0.8.0
+### v0.8.0 (June 14, 2015)
 
 * Reverted to 0.6.0 approach for packaging Ruby core docs.
+* Generated docs for Ruby 2.2
 
 ### v0.7.0 (April 1, 2014)
 
