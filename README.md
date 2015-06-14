@@ -45,6 +45,7 @@ Pry Doc supports the following Rubies:
 * MRI 1.9
 * MRI 2.0
 * MRI 2.1
+* MRI 2.2
 
 Getting Help
 ------------
