@@ -22,8 +22,10 @@ when /\A2\.1/
   PryDoc.load_yardoc('21')
 when /\A2\.0/
   PryDoc.load_yardoc('20')
-else
+when /\A1.9/
   PryDoc.load_yardoc('19')
+else
+  puts "Ruby #{RUBY_VERSION} isn't supported by this pry-doc version"
 end
 
 class Pry
