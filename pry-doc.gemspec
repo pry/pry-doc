@@ -24,4 +24,5 @@ DESCR
   s.add_dependency 'pry', "~> 0.9"
   s.add_development_dependency 'latest_ruby', "~> 0.0"
   s.add_development_dependency 'bacon', "~> 1.1"
+  s.add_development_dependency 'rake', "~> 10.0"
 end
