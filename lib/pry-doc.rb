@@ -44,7 +44,7 @@ class Pry
     #   must figure out a better way to distinguish between class methods and
     #   instance methods.
     def self.receiver_notation_for(meth)
-      match = meth.inspect.match(/\A#<(?:Unbound)?Method: (.+)([#\.].+)>\z/)
+      match = meth.inspect.match(/\A#<(?:Unbound)?Method: (.+)([#\.].+?)(?:\(.+\))?>\z/)
       owner = meth.owner.to_s.sub(/#<.+?:(.+?)>/, '\1')
       name = match[2]
       name.sub!('#', '.') if match[1] =~ /\A#<Class:/
@@ -56,15 +56,13 @@ class Pry
     # @return [Array] The aliases of a method if it exists
     #                 otherwise, return empty array
     def self.aliases(meth)
-      host        = is_singleton?(meth) ? meth.receiver : meth.owner
-      method_type = is_singleton?(meth) ? :method : :instance_method
+      host        = meth.owner
+      method_type = :instance_method
+      methods = (host.instance_methods + host.private_instance_methods).uniq
 
-      methods = Pry::Method.send(:all_from_common, host, method_type, false).
-                            map { |m| m.instance_variable_get(:@method) }
-
-      methods.select { |m| host.send(method_type,m.name) == host.send(method_type,meth.name) }.
-              reject { |m| m.name == meth.name }.
-              map    { |m| host.send(method_type,m.name) }
+      methods.select { |m| host.send(method_type, m.to_s) == host.send(method_type, meth.name) }.
+              reject { |m| m.to_s == meth.name.to_s }.
+              map    { |m| host.send(method_type, m.to_s) }
     end
 
     # Checks whether method is a singleton (i.e class method)
