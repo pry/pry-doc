@@ -8,3 +8,4 @@ pkg/
 *.gem
 Gemfile.lock
 *~
+sample.bundle
