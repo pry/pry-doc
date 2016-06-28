@@ -44,7 +44,7 @@ class Pry
     #   must figure out a better way to distinguish between class methods and
     #   instance methods.
     def self.receiver_notation_for(meth)
-      match = meth.inspect.match(/\A#<(?:Unbound)?Method: (.+)([#\.].+)>\z/)
+      match = meth.inspect.match(/\A#<(?:Unbound)?Method: (.+)([#\.].+?)(?:\(.+\))?>\z/)
       owner = meth.owner.to_s.sub(/#<.+?:(.+?)>/, '\1')
       name = match[2]
       name.sub!('#', '.') if match[1] =~ /\A#<Class:/
