@@ -2,7 +2,7 @@
 
 static VALUE gleezor(VALUE self)
 {
-  return 1;
+  return INT2FIX(1);
 }
 
 void Init_sample(void)
