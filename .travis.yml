@@ -9,9 +9,11 @@ rvm:
   - ruby-head
 
 script:
-  - rake spec
+  - bundle exec rake spec
 
 sudo: false
+
+cache: bundler
 
 matrix:
   allow_failures:
