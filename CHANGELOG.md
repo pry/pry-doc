@@ -61,4 +61,4 @@ Pry Doc changelog
 * Signed the gem with a cryptographic signature
 
 [yard648]: https://github.com/lsegal/yard/issues/648
-[v0.9.0]: https://github.com/airbrake/airbrake-ruby/releases/tag/v0.9.0
+[v0.9.0]: https://github.com/pry/pry-doc/releases/tag/v0.9.0
