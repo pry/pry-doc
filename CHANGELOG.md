@@ -1,6 +1,15 @@
 Pry Doc changelog
 =================
 
+### master
+
+### [v0.9.0][v0.9.0] (June 30, 2016)
+
+* **Important:** Added support for Ruby 2.3 docs
+  ([#35](https://github.com/pry/pry-doc/pull/35))
+* Warn when Pry Doc doesn't support current Ruby version
+  ([#31](https://github.com/pry/pry-doc/pull/31))
+
 ### v0.8.0 (June 14, 2015)
 
 * Reverted to 0.6.0 approach for packaging Ruby core docs.
@@ -52,3 +61,4 @@ Pry Doc changelog
 * Signed the gem with a cryptographic signature
 
 [yard648]: https://github.com/lsegal/yard/issues/648
+[v0.9.0]: https://github.com/airbrake/airbrake-ruby/releases/tag/v0.9.0
