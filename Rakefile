@@ -3,7 +3,10 @@ direc = File.dirname(__FILE__)
 
 PROJECT_NAME = "pry-doc"
 
-require 'latest_ruby'
+begin
+  require 'latest_ruby'
+rescue LoadError
+end
 require 'rake/clean'
 require "#{direc}/lib/#{PROJECT_NAME}/version"
 
@@ -90,6 +93,7 @@ def generate_docs_for(ruby_ver, latest_ruby)
   clean_up
 end
 
+if defined? Latest
 desc "Generate the latest Ruby 1.9 docs"
 task "gen19" do
   generate_docs_for('19', Latest.ruby19)
@@ -113,4 +117,10 @@ end
 desc "Generate the latest Ruby 2.3 docs"
 task "gen23" do
   generate_docs_for('23', Latest.ruby23)
+end
+end
+
+desc "Generate Any Version Ruby docs"
+task "genAnyVerDoc" do
+  puts "run command:\n  ruby genAnyVerDoc.rb VerNum /path/to/rubydev_dir"
 end
