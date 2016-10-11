@@ -56,7 +56,7 @@ Simply file an issue or visit `#pry` at `irc.freenode.net`.
 License
 -------
 
-The project uses the MIT Licencse. See LICENSE file for more information.
+The project uses the MIT License. See LICENSE file for more information.
 
 [logo]: http://img-fotki.yandex.ru/get/6724/98991937.13/0_9faaa_26ec83af_orig "Pry Doc"
 [pry]: https://github.com/pry/pry
