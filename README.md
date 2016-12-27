@@ -40,13 +40,7 @@ for methods and classes implemented in C.
 Limitations
 -----------
 
-Pry Doc supports the following Rubies:
-
-* MRI 1.9
-* MRI 2.0
-* MRI 2.1
-* MRI 2.2
-* MRI 2.3
+Pry Doc supports Ruby 1.9 and above.
 
 Getting Help
 ------------
