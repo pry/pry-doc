@@ -10,6 +10,7 @@ module PryDoc
 
   def self.load_yardoc(version)
     path = "#{File.dirname(__FILE__)}/pry-doc/core_docs_#{ version }"
+    raise "no this pry-doc path" unless File.directory?(path)
     YARD::Registry.load_yardoc(path)
   end
 
@@ -27,7 +28,14 @@ when /\A2\.0/
 when /\A1.9/
   PryDoc.load_yardoc('19')
 else
-  puts "Ruby #{RUBY_VERSION} isn't supported by this pry-doc version"
+  begin
+    RUBY_VERSION=~/\A(\d)\.(\d)/
+    ver = "#{$1}#{$2}"
+    puts "Try load ruby #{ver} pry-doc.."
+    PryDoc.load_yardoc(ver)
+  rescue
+    puts "Ruby #{RUBY_VERSION} isn't supported by this pry-doc version"
+  end
 end
 
 class Pry
