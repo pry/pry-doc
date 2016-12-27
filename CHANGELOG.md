@@ -3,6 +3,9 @@ Pry Doc changelog
 
 ### master
 
+* Added support for Ruby 2.4 docs
+  ([#46](https://github.com/pry/pry-doc/pull/46))
+
 ### [v0.9.0][v0.9.0] (June 30, 2016)
 
 * **Important:** Added support for Ruby 2.3 docs

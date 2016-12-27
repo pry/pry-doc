@@ -16,6 +16,8 @@ module PryDoc
 end
 
 case RUBY_VERSION
+when /\A2\.4/
+  PryDoc.load_yardoc('24')
 when /\A2\.3/
   PryDoc.load_yardoc('23')
 when /\A2\.2/
