@@ -1,3 +1,8 @@
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:spec)
+
+task default: :spec
+
 dlext = RbConfig::CONFIG['DLEXT']
 direc = File.dirname(__FILE__)
 
@@ -6,14 +11,6 @@ PROJECT_NAME = "pry-doc"
 require 'latest_ruby'
 require 'rake/clean'
 require "#{direc}/lib/#{PROJECT_NAME}/version"
-
-desc "run tests"
-task :test do
-  sh "bacon -k #{direc}/spec/pry-doc_spec.rb"
-end
-task :spec => :test
-
-task :default => :test
 
 desc "reinstall gem"
 task :reinstall => :gems do
