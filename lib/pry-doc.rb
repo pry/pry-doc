@@ -7,29 +7,15 @@ require "#{direc}/pry-doc/version"
 require "yard"
 
 module PryDoc
-
   def self.load_yardoc(version)
-    path = "#{File.dirname(__FILE__)}/pry-doc/core_docs_#{ version }"
-    YARD::Registry.load_yardoc(path)
+    path = "#{File.dirname(__FILE__)}/pry-doc/core_docs_#{version}"
+
+    if File.directory?(path)
+      YARD::Registry.load_yardoc(path)
+    else
+      puts "Ruby #{RUBY_VERSION} isn't supported by this pry-doc version"
+    end
   end
-
-end
-
-case RUBY_VERSION
-when /\A2\.4/
-  PryDoc.load_yardoc('24')
-when /\A2\.3/
-  PryDoc.load_yardoc('23')
-when /\A2\.2/
-  PryDoc.load_yardoc('22')
-when /\A2\.1/
-  PryDoc.load_yardoc('21')
-when /\A2\.0/
-  PryDoc.load_yardoc('20')
-when /\A1.9/
-  PryDoc.load_yardoc('19')
-else
-  puts "Ruby #{RUBY_VERSION} isn't supported by this pry-doc version"
 end
 
 class Pry
@@ -236,3 +222,5 @@ class Pry
     end
   end
 end
+
+PryDoc.load_yardoc(RUBY_VERSION[0...3].sub!('.', ''))
