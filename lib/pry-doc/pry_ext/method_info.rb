@@ -65,15 +65,11 @@ class Pry
       registry_lookup(meth)
     end
 
-    # Determine whether a method is an eval method.
-    # @return [Boolean] Whether the method is an eval method.
-    def self.is_eval_method?(meth)
+    ##
+    # @return [Boolean] true if `meth` is an eval method, false otherwise
+    def self.eval_method?(meth)
       file, _ = meth.source_location
-      if file =~ /(\(.*\))|<.*>/
-        true
-      else
-        false
-      end
+      !!(file =~ /(\(.*\))|<.*>/)
     end
 
     # Attempts to find the c source files if method belongs to a gem
@@ -182,7 +178,7 @@ class Pry
     def self.cache(meth)
       file, _ = meth.source_location
 
-      return if is_eval_method?(meth)
+      return if eval_method?(meth)
       return if cached?(meth)
 
       if !file
