@@ -58,23 +58,19 @@ class Pry
       registry_lookup(meth)
     end
 
+    ##
     # Attempts to find the c source files if method belongs to a gem
     # and use YARD to parse and cache the source files for display
     #
     # @param [Method, UnboundMethod] meth The method object.
     def self.parse_and_cache_if_gem_cext(meth)
-      if gem_dir = find_gem_dir(meth)
-        if c_files_found?(gem_dir)
-          warn "Scanning and caching *.c files..."
-          YARD.parse("#{gem_dir}/**/*.c")
-        end
-      end
-    end
+      return unless (gem_dir = find_gem_dir(meth))
 
-    # @param [String] root directory path of gem that method belongs to
-    # @return [Boolean] true if c files exist?
-    def self.c_files_found?(gem_dir)
-      Dir.glob("#{gem_dir}/**/*.c").count > 0
+      path = "#{gem_dir}/**/*.c"
+      return if Dir.glob(path).none?
+
+      puts "Scanning and caching *.c files..."
+      YARD.parse(path)
     end
 
     # @return [Object] The host of the method (receiver or owner).
