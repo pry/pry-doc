@@ -44,17 +44,17 @@ class Pry
     end
 
     def self.registry_lookup(meth)
-      obj = YARD::Registry.at(receiver_notation_for(meth))
-      if obj.nil?
-        if !(aliases = aliases(meth)).empty?
-          obj = YARD::Registry.at(receiver_notation_for(aliases.first))
-        elsif meth.owner == Kernel
-          # YARD thinks that some methods are on Object when
-          # they're actually on Kernel; so try again on Object if Kernel fails.
-          obj = YARD::Registry.at("Object##{meth.name}")
-        end
+      if (obj = YARD::Registry.at(receiver_notation_for(meth)))
+        return obj
       end
-      obj
+
+      if (aliases = aliases(meth)).any?
+        YARD::Registry.at(receiver_notation_for(aliases.first))
+      elsif meth.owner == Kernel
+        # YARD thinks that some methods are on Object when
+        # they're actually on Kernel; so try again on Object if Kernel fails.
+        YARD::Registry.at("Object##{meth.name}")
+      end
     end
 
     # Retrieve the YARD object that contains the method data.
