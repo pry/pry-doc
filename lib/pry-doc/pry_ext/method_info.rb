@@ -36,13 +36,6 @@ class Pry
       receiver_notation_for(meth).include?('.')
     end
 
-    # Check whether the file containing the method is already cached.
-    # @param [Method, UnboundMethod] meth The method object.
-    # @return [Boolean] Whether the method is cached.
-    def self.cached?(meth)
-      !!registry_lookup(meth)
-    end
-
     def self.registry_lookup(meth)
       if (obj = YARD::Registry.at(receiver_notation_for(meth)))
         return obj
@@ -63,13 +56,6 @@ class Pry
     def self.info_for(meth)
       cache(meth)
       registry_lookup(meth)
-    end
-
-    ##
-    # @return [Boolean] true if `meth` is an eval method, false otherwise
-    def self.eval_method?(meth)
-      file, _ = meth.source_location
-      !!(file =~ /(\(.*\))|<.*>/)
     end
 
     # Attempts to find the c source files if method belongs to a gem
@@ -171,17 +157,22 @@ class Pry
       nil
     end
 
-    # Cache the file that holds the method or return immediately if file is
-    # already cached. Return if the method cannot be cached -
-    # i.e is a C stdlib method.
+    ##
+    # Caches the file that holds the method.
+    #
+    # Cannot cache C stdlib and eval methods.
+    #
     # @param [Method, UnboundMethod] meth The method object.
     def self.cache(meth)
       file, _ = meth.source_location
 
-      return if eval_method?(meth)
-      return if cached?(meth)
+      # Eval methods can't be cached.
+      return if file =~ /(\(.*\))|<.*>/
 
-      if !file
+      # No need to cache already cached methods.
+      return if registry_lookup(meth)
+
+      unless file
         parse_and_cache_if_gem_cext(meth)
         return
       end
