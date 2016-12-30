@@ -8,22 +8,19 @@ require "yard"
 
 module PryDoc
   def self.load_yardoc(version)
-    path = "#{(File.dirname(__FILE__))}/pry-doc/docs/#{version}"
+    path = "#{File.dirname(__FILE__)}/pry-doc/docs/#{version}"
     unless File.directory?(path)
-      raise "Ruby #{RUBY_VERSION} isn't supported by this pry-doc version"
+      raise "#{RUBY_ENGINE}/#{RUBY_VERSION} isn't supported by this pry-doc version"
     end
+
+    # Do not use pry-doc if Rubinius is active.
+    Pry.config.has_pry_doc = RUBY_ENGINE !~ /rbx/
 
     YARD::Registry.load_yardoc(path)
   end
 end
 
 class Pry
-
-  # do not use pry-doc if rbx is active
-  if !Object.const_defined?(:RUBY_ENGINE) || RUBY_ENGINE !~ /rbx/
-    self.config.has_pry_doc = true
-  end
-
   module MethodInfo
 
     # Convert a method object into the `Class#method` string notation.
