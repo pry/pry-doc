@@ -70,7 +70,7 @@ def generate_yard
 end
 
 def replace_existing_docs(ver)
-  system %|mkdir -p ../../../lib/pry-doc/core_docs_#{ ver } && cp -r .yardoc/* "$_"|
+  system %|mkdir -p ../../../lib/pry-doc/docs/#{ver} && cp -r .yardoc/* "$_"|
   Dir.chdir(File.expand_path(File.dirname(__FILE__)))
 end
 

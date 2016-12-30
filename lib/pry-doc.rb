@@ -8,13 +8,12 @@ require "yard"
 
 module PryDoc
   def self.load_yardoc(version)
-    path = "#{File.dirname(__FILE__)}/pry-doc/core_docs_#{version}"
-
-    if File.directory?(path)
-      YARD::Registry.load_yardoc(path)
-    else
-      puts "Ruby #{RUBY_VERSION} isn't supported by this pry-doc version"
+    path = "#{(File.dirname(__FILE__))}/pry-doc/docs/#{version}"
+    unless File.directory?(path)
+      raise "Ruby #{RUBY_VERSION} isn't supported by this pry-doc version"
     end
+
+    YARD::Registry.load_yardoc(path)
   end
 end
 
