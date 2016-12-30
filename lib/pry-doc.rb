@@ -1,10 +1,5 @@
-# pry-doc.rb
-# (C) John Mair (banisterfiend); MIT license
-
-direc = File.dirname(__FILE__)
-
-require "#{direc}/pry-doc/version"
-require "yard"
+require 'yard'
+require 'pry-doc/version'
 
 module PryDoc
   def self.load_yardoc(version)
