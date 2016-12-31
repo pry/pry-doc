@@ -11,18 +11,22 @@ class Pry
       end
 
       ##
-      # Retrives aliases of a method
-      # @param [Method, UnboundMethod] meth The method object.
-      # @return [Array] The aliases of a method if it exists
-      #                 otherwise, return empty array
+      # Retrieves aliases of the given method.
+      #
+      # @param [Method, UnboundMethod] meth The method object
+      # @return [Array<UnboundMethod>] the aliases of the given method if they
+      #   exist, otherwise an empty array
       def aliases(meth)
-        host        = meth.owner
-        method_type = :instance_method
-        methods = (host.instance_methods + host.private_instance_methods).uniq
+        owner = meth.owner
+        name = meth.name
 
-        methods.select { |m| host.send(method_type, m.to_s) == host.send(method_type, meth.name) }.
-          reject { |m| m.to_s == meth.name.to_s }.
-          map    { |m| host.send(method_type, m.to_s) }
+        (owner.instance_methods + owner.private_instance_methods).uniq.map do |m|
+          aliased_method = owner.__send__(:instance_method, m)
+
+          next unless aliased_method == owner.__send__(:instance_method, name)
+          next if m == name
+          aliased_method
+        end.compact!
       end
 
       ##
