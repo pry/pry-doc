@@ -136,8 +136,6 @@ class Pry
           name.scan(/[A-Z][a-z]+/).map(&:downcase).join('-')
         when 4
           name
-        else
-          nil
         end
       end
 
@@ -145,11 +143,10 @@ class Pry
       # @param [Method, UnboundMethod] meth The method object.
       # @return [String, nil] The located gem directory.
       def gem_dir_from_method(meth)
-        guess = 0
+        return unless (host = method_host(meth)).name
 
-        host = method_host(meth)
-        return unless host.name
-        root_module_name = host.name.split("::").first
+        root_module_name = host.name.split('::').first
+        guess = 0
         while gem_name = guess_gem_name_from_module_name(root_module_name, guess)
           matches = $LOAD_PATH.grep %r{/gems/#{gem_name}} if !gem_name.empty?
           if matches && matches.any?
