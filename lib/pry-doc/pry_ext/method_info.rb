@@ -119,41 +119,35 @@ class Pry
         end
       end
 
+      ##
       # Try to guess what the gem name will be based on the name of the module.
-      # We try a few approaches here depending on the `guess` parameter.
-      # @param [String] name The name of the module.
-      # @param [Fixnum] guess The current guessing approach to use.
-      # @return [String, nil] The guessed gem name, or `nil` if out of guesses.
-      def guess_gem_name_from_module_name(name, guess)
-        case guess
-        when 0
-          name.downcase
-        when 1
-          name.scan(/[A-Z][a-z]+/).map(&:downcase).join('_')
-        when 2
-          name.scan(/[A-Z][a-z]+/).map(&:downcase).join('_').sub("_", "-")
-        when 3
-          name.scan(/[A-Z][a-z]+/).map(&:downcase).join('-')
-        when 4
-          name
+      #
+      # @param [String] name The name of the module
+      # @return [Enumerator] the enumerator which enumerates on possible names
+      #   we try to guess
+      def guess_gem_name(name)
+        scanned_name = name.scan(/[A-z]+/).map(&:downcase)
+
+        Enumerator.new do |y|
+          y << name.downcase
+          y << scanned_name.join('_')
+          y << scanned_name.join('_').sub('_', '-')
+          y << scanned_name.join('-')
+          y << name
         end
       end
 
+      ##
       # Try to recover the gem directory of a gem based on a method object.
-      # @param [Method, UnboundMethod] meth The method object.
-      # @return [String, nil] The located gem directory.
+      #
+      # @param [Method, UnboundMethod] meth The method object
+      # @return [String, nil] the located gem directory
       def gem_dir_from_method(meth)
         return unless (host = method_host(meth)).name
 
-        root_module_name = host.name.split('::').first
-        guess = 0
-        while gem_name = guess_gem_name_from_module_name(root_module_name, guess)
-          matches = $LOAD_PATH.grep %r{/gems/#{gem_name}} if !gem_name.empty?
-          if matches && matches.any?
-            return gem_root(matches.first)
-          else
-            guess += 1
-          end
+        guess_gem_name(host.name.split('::').first).each do |guess|
+          matches = $LOAD_PATH.grep(%r(/gems/#{guess}))
+          return gem_root(matches.first) if matches.any?
         end
 
         nil
