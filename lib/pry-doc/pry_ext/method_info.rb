@@ -3,8 +3,9 @@ class Pry
     class << self
       ##
       # Retrieve the YARD object that contains the method data.
-      # @param [Method, UnboundMethod] meth The method object.
-      # @return [YARD::CodeObjects::MethodObject] The YARD data for the method.
+      #
+      # @param [Method, UnboundMethod] meth The method object
+      # @return [YARD::CodeObjects::MethodObject] the YARD data for the method
       def info_for(meth)
         cache(meth)
         registry_lookup(meth)
@@ -30,21 +31,23 @@ class Pry
       end
 
       ##
-      # FIXME: this is unnecessarily limited to ext/ and lib/ folders
-      # @return [String] The root folder of a given gem directory.
+      # FIXME: this is unnecessarily limited to ext/ and lib/ directories.
+      #
+      # @return [String] the root directory of a given gem directory
       def gem_root(dir)
-        if index = dir.rindex(/\/(?:lib|ext)(?:\/|$)/)
-          dir[0..index-1]
-        end
+        return unless (index = dir.rindex(%r(/(?:lib|ext)(?:/|$))))
+        dir[0..index-1]
       end
 
       private
 
+      ##
       # Convert a method object into the `Class#method` string notation.
+      #
       # @param [Method, UnboundMethod] meth
-      # @return [String] The method in string receiver notation.
-      # @note This mess is needed in order to support all the modern Rubies. YOU
-      #   must figure out a better way to distinguish between class methods and
+      # @return [String] the method in string receiver notation
+      # @note This mess is needed to support all the modern Rubies. Somebody has
+      #   to figure out a better way to distinguish between class methods and
       #   instance methods.
       def receiver_notation_for(meth)
         match = meth.inspect.match(/\A#<(?:Unbound)?Method: (.+)([#\.].+?)(?:\(.+\))?>\z/)
@@ -54,9 +57,11 @@ class Pry
         owner + name
       end
 
-      # Checks whether method is a singleton (i.e class method)
-      # @param [Method, UnboundMethod] meth
-      # @param [Boolean] true if singleton
+      ##
+      # Checks whether `meth` is a class method.
+      #
+      # @param [Method, UnboundMethod] meth The method to check
+      # @return [Boolean] true if singleton, otherwise false
       def is_singleton?(meth)
         receiver_notation_for(meth).include?('.')
       end
@@ -76,10 +81,10 @@ class Pry
       end
 
       ##
-      # Attempts to find the c source files if method belongs to a gem
-      # and use YARD to parse and cache the source files for display
+      # Attempts to find the C source files if method belongs to a gem and use
+      # YARD to parse and cache the source files for display.
       #
-      # @param [Method, UnboundMethod] meth The method object.
+      # @param [Method, UnboundMethod] meth The method object
       def parse_and_cache_if_gem_cext(meth)
         return unless (gem_dir = find_gem_dir(meth))
 
@@ -90,14 +95,16 @@ class Pry
         YARD.parse(path)
       end
 
-      # @return [Object] The host of the method (receiver or owner).
+      ##
+      # @return [Object] the host of the method (receiver or owner)
       def method_host(meth)
         is_singleton?(meth) && Module === meth.receiver ? meth.receiver : meth.owner
       end
 
-      # @param [Method, UnboundMethod] meth The method object.
-      # @return [String] root directory path of gem that method belongs to,
-      #                  nil if could not be found
+      ##
+      # @param [Method, UnboundMethod] meth The method object
+      # @return [String, nil] root directory path of gem that method belongs to
+      #   or nil if could not be found
       def find_gem_dir(meth)
         host = method_host(meth)
 
@@ -108,13 +115,12 @@ class Pry
           host = eval(host.namespace_name)
         end while host
 
-        # we want to exclude all source_locations that aren't gems (i.e
-        # stdlib)
+        # We want to exclude all source_locations that aren't gems (i.e
+        # stdlib).
         if host_source_location && host_source_location =~ %r{/gems/}
           gem_root(host_source_location)
         else
-
-          # the WrappedModule approach failed, so try our backup approach
+          # The WrappedModule approach failed, so try our backup approach.
           gem_dir_from_method(meth)
         end
       end
