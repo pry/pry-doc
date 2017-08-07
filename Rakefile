@@ -87,11 +87,6 @@ def generate_docs_for(ruby_ver, latest_ruby)
   clean_up
 end
 
-desc "Generate the latest Ruby 1.9 docs"
-task "gen19" do
-  generate_docs_for('19', Latest.ruby19)
-end
-
 desc "Generate the latest Ruby 2.0 docs"
 task "gen20" do
   generate_docs_for('20', Latest.ruby20)
