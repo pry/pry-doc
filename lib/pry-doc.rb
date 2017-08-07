@@ -7,7 +7,7 @@ module PryDoc
   def self.load_yardoc(version)
     path = "#{File.dirname(__FILE__)}/pry-doc/docs/#{version}"
     unless File.directory?(path)
-      raise "#{RUBY_ENGINE}/#{RUBY_VERSION} isn't supported by this pry-doc version"
+      puts "#{RUBY_ENGINE}/#{RUBY_VERSION} isn't supported by this pry-doc version"
     end
 
     # Do not use pry-doc if Rubinius is active.
