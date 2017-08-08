@@ -3,6 +3,8 @@ Pry Doc changelog
 
 ### master
 
+### [v0.11.1][v0.11.1] (August 8, 2017)
+
 * Specified minimum required Ruby version in the gemspec
   ([#70](https://github.com/pry/pry-doc/pull/70))
 
@@ -79,3 +81,4 @@ Pry Doc changelog
 [v0.9.0]: https://github.com/pry/pry-doc/releases/tag/v0.9.0
 [v0.10.0]: https://github.com/pry/pry-doc/releases/tag/v0.10.0
 [v0.11.0]: https://github.com/pry/pry-doc/releases/tag/v0.11.0
+[v0.11.1]: https://github.com/pry/pry-doc/releases/tag/v0.11.1
