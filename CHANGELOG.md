@@ -3,6 +3,9 @@ Pry Doc changelog
 
 ### master
 
+* Specified minimum required Ruby version in the gemspec
+  ([#70](https://github.com/pry/pry-doc/pull/70))
+
 ### [v0.11.0][v0.11.0] (August 8, 2017)
 
 * **IMPORTANT:** Drop support for Ruby 1.9.3
