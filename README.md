@@ -40,7 +40,7 @@ for methods and classes implemented in C.
 Limitations
 -----------
 
-Pry Doc supports Ruby 1.9 and above.
+Pry Doc supports Ruby 2.0 and above.
 
 Getting Help
 ------------
