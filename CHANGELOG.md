@@ -3,6 +3,10 @@ Pry Doc changelog
 
 ### master
 
+### [v0.12.0][v0.12.0] (January 21, 2018)
+
+* Added suport for Ruby 2.5 docs ([#75](https://github.com/pry/pry-doc/pull/75))
+
 ### [v0.11.1][v0.11.1] (August 8, 2017)
 
 * Specified minimum required Ruby version in the gemspec
@@ -82,3 +86,4 @@ Pry Doc changelog
 [v0.10.0]: https://github.com/pry/pry-doc/releases/tag/v0.10.0
 [v0.11.0]: https://github.com/pry/pry-doc/releases/tag/v0.11.0
 [v0.11.1]: https://github.com/pry/pry-doc/releases/tag/v0.11.1
+[v0.12.0]: https://github.com/pry/pry-doc/releases/tag/v0.12.0
