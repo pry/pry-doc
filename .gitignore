@@ -9,3 +9,6 @@ pkg/
 Gemfile.lock
 *~
 sample.bundle
+
+.bundle/
+vendor/bundle/

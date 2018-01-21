@@ -76,7 +76,8 @@ class Pry
         elsif meth.owner == Kernel
           # YARD thinks that some methods are on Object when
           # they're actually on Kernel; so try again on Object if Kernel fails.
-          YARD::Registry.at("Object##{meth.name}")
+          YARD::Registry.at("Kernel##{meth.name}") ||
+            YARD::Registry.at("Object##{meth.name}")
         end
       end
 
