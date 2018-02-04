@@ -11,6 +11,8 @@ class Pry
       def info_for(meth)
         cache(meth)
         code = registry_lookup(meth)
+
+        binding.pry
         if code
           code
         else

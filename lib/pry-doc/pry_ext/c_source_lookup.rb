@@ -103,7 +103,7 @@ class CExtractor
     if file_cache.key?(file)
       file_cache[file]
     else
-      file_cache[file] = File.read(File.expand_path(File.join(__dir__, "pry-c", "resources", "ruby", file))).lines
+      file_cache[file] = File.read(File.join(File.expand_path("~/.pry.d/ruby-#{ruby_version}"), file)).lines
       file_cache[file].unshift("\n")
     end
   end
@@ -113,13 +113,12 @@ class CExtractor
     return unless infos
 
     infos.each do |info|
-      output.puts "File: #{info.file} Line: #{info.line}\n\n"
       code = if info.original_symbol.start_with?("#define")
-               extract_macro(info)
+               puts extract_macro(info)
              elsif info.original_symbol.start_with?("struct") || info.original_symbol.start_with?("enum")
-               extract_struct(info)
+               puts extract_struct(info)
              else
-               extract_function(info)
+               puts extract_function(info)
              end
     end
   end
@@ -128,18 +127,26 @@ class CExtractor
     if !File.directory?(File.expand_path("~/.pry.d/ruby-#{ruby_version}"))
       puts "Downloading and setting up Ruby #{ruby_version} source..."
       FileUtils.mkdir_p(File.expand_path("~/.pry.d/"))
-      %x{ curl -L https://github.com/ruby/ruby/archive/v2_5_0.tar.gz | tar xzvf - > /dev/null 2>&1 }
+      FileUtils.cd(File.expand_path("~/.pry.d")) do
+        %x{ curl -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - > /dev/null 2>&1 }
+      end
+
       FileUtils.cd(File.expand_path("~/.pry.d/ruby-#{ruby_version}")) do
-        %x{ find . -type f -name "*.[chy]" | etags -  -o tags > /dev/null 2>&1 }
+        puts "Generating tagfile!"
+        %x{ find . -type f -name "*.[chy]" > /dev/null 2>&1 | etags -  -o tags }
       end
       puts "...Finished!"
     end
 
-    @tagfile ||= File.read(File.expand_path("~/.pry.d/ruby-#{ruby_version}/tagfile"))
+    @tagfile ||= File.read(File.expand_path("~/.pry.d/ruby-#{ruby_version}/tags"))
+  end
+
+  def ruby_version
+    self.class.ruby_version
   end
 
   # normalized
-  def ruby_version
+  def self.ruby_version
     RUBY_VERSION.tr(".", "_")
   end
 
