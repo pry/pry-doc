@@ -1,3 +1,5 @@
+require_relative "./c_source_lookup"
+
 class Pry
   module MethodInfo
     class << self
@@ -8,7 +10,12 @@ class Pry
       # @return [YARD::CodeObjects::MethodObject] the YARD data for the method
       def info_for(meth)
         cache(meth)
-        registry_lookup(meth)
+        code = registry_lookup(meth)
+        if code
+          code
+        else
+          CExtractor.new.extract(meth)
+        end
       end
 
       ##
