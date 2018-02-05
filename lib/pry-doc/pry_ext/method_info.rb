@@ -10,14 +10,7 @@ class Pry
       # @return [YARD::CodeObjects::MethodObject] the YARD data for the method
       def info_for(meth)
         cache(meth)
-        code = registry_lookup(meth)
-
-        binding.pry
-        if code
-          code
-        else
-          CExtractor.new.extract(meth)
-        end
+        registry_lookup(meth)
       end
 
       ##
