@@ -26,7 +26,7 @@ class CFile
 
   def cleanup_symbol(symbol)
     symbol = symbol.split.last
-    symbol.chomp("(")
+    symbol.chomp("(").chomp("*").chomp(";")
   end
 
   def cleanup_linenumber(line_number)
@@ -58,6 +58,16 @@ class ShowCSource < Pry::ClassCommand
     offset = 1
     loop do
       code = source_file[info.line, offset].join
+      break code if balanced?(code)
+      offset += 1
+    end
+  end
+
+  def extract_typedef_struct(info)
+    source_file = source_from_file(info.file)
+    offset = 1
+    loop do
+      code = source_file[info.line - offset..info.line].join
       break code if balanced?(code)
       offset += 1
     end
@@ -149,8 +159,10 @@ class ShowCSource < Pry::ClassCommand
   def show_first_definition(info, count=1)
     code = if info.original_symbol.start_with?("#define")
              extract_macro(info)
-           elsif info.original_symbol.start_with?("struct") || info.original_symbol.start_with?("enum")
+           elsif info.original_symbol =~ /\s*struct\s*/ || info.original_symbol.start_with?("enum")
              extract_struct(info)
+           elsif info.original_symbol.start_with?("}")
+             extract_typedef_struct(info)
            else
              extract_function(info)
            end
