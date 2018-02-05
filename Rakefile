@@ -15,7 +15,7 @@ require "#{direc}/lib/#{PROJECT_NAME}/version"
 desc "reinstall gem"
 task :reinstall => :gems do
   sh "gem uninstall pry-doc" rescue nil
-  sh "gem install #{direc}/pkg/pry-doc-#{PryDoc::VERSION}.gem"
+  sh "gem install #{direc}/pkg/pry-doc-#{PryDoc::VERSION}.gem --no-document"
 end
 
 desc "build all platform gems at once"
