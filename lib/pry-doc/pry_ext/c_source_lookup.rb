@@ -77,7 +77,7 @@ class ShowCSource < Pry::ClassCommand
     source_file = source_from_file(info.file)
     offset = 1
 
-    if source_file[info.line] !~ /\w+\s+\w\(/ && source_file[info.line - 1].strip =~ /\w$/
+    if source_file[info.line] !~ /\w+\s+\w\(/ && source_file[info.line - 1].strip =~ /[\w\*]$/
       start_line = info.line - 1
       offset += 1
     else
