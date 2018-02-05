@@ -148,15 +148,23 @@ class ShowCSource < Pry::ClassCommand
     _pry_.pager.page result
   end
 
-  def show_all_definitions(infos)
+  def show_all_definitions(x)
+    infos = self.class.symbol_map[x]
+    return unless infos
+
     result = ""
     infos.each do |info|
-      result << show_first_definition(info) << "\n"
+      result << show_first_definition(x, false) << "\n"
     end
     result
   end
 
-  def show_first_definition(info, count=1)
+  def show_first_definition(x, show_count=true)
+    infos = self.class.symbol_map[x]
+    return unless infos
+
+    count = infos.count
+    info = infos.first
     code = if info.original_symbol.start_with?("#define")
              extract_macro(info)
            elsif info.original_symbol =~ /\s*struct\s*/ || info.original_symbol.start_with?("enum")
@@ -168,10 +176,10 @@ class ShowCSource < Pry::ClassCommand
            end
 
     h = "\n#{text.bold('From: ')}#{info.file} @ line #{info.line}:\n"
-    h << "#{text.bold('Number of implementations:')} #{count}\n" if count > 1
+    h << "#{text.bold('Number of implementations:')} #{count}\n" if show_count
     h << "#{text.bold('Number of lines: ')} #{code.lines.count}\n\n"
-    h << Pry::Code.new(code, start_line_for(info), :c).
-               with_line_numbers(use_line_numbers?).highlighted
+    h << Pry::Code.new(code, 1, :c).
+               with_line_numbers(false).highlighted
   end
 
   def start_line_for(info)
