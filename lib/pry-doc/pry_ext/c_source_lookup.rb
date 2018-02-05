@@ -34,7 +34,11 @@ class CFile
   end
 end
 
-class CExtractor
+class ShowCSource < Pry::ClassCommand
+  match 'show-c'
+  group 'Introspection'
+  description 'show c source'
+
   class << self
     attr_accessor :file_cache
   end
@@ -108,18 +112,61 @@ class CExtractor
     end
   end
 
-  def extract(x)
-    infos = self.class.symbol_map[x]
-    return unless infos
+  def use_line_numbers?
+    opts.present?(:b) || opts.present?(:l)
+  end
 
+  def options(opt)
+    opt.on :l, "line-numbers", "Show line numbers"
+    opt.on :b, "base-one", "Show line numbers but start numbering at 1"
+    opt.on :a, :all,  "Show all definitions of the C function"
+  end
+
+  def process(x)
+    infos = self.class.symbol_map[x]
+    if infos.nil?
+      output.puts "Error: Couldn't locate a definition for #{x}"
+      return
+    end
+
+    if opts.present?(:all)
+      result = show_all_definitions(infos)
+    else
+      result = show_first_definition(infos.first, infos.count)
+    end
+
+    _pry_.pager.page result
+  end
+
+  def show_all_definitions(infos)
+    result = ""
     infos.each do |info|
-      code = if info.original_symbol.start_with?("#define")
-               puts extract_macro(info)
-             elsif info.original_symbol.start_with?("struct") || info.original_symbol.start_with?("enum")
-               puts extract_struct(info)
-             else
-               puts extract_function(info)
-             end
+      result << show_first_definition(info) << "\n"
+    end
+    result
+  end
+
+  def show_first_definition(info, count=1)
+    code = if info.original_symbol.start_with?("#define")
+             extract_macro(info)
+           elsif info.original_symbol.start_with?("struct") || info.original_symbol.start_with?("enum")
+             extract_struct(info)
+           else
+             extract_function(info)
+           end
+
+    h = "\n#{text.bold('From: ')}#{info.file} @ line #{info.line}:\n"
+    h << "#{text.bold('Number of implementations:')} #{count}\n" if count > 1
+    h << "#{text.bold('Number of lines: ')} #{code.lines.count}\n\n"
+    h << Pry::Code.new(code, start_line_for(info), :c).
+               with_line_numbers(use_line_numbers?).highlighted
+  end
+
+  def start_line_for(info)
+    if opts.present?(:'base-one')
+      1
+    else
+      info.line || 1
     end
   end
 
@@ -163,3 +210,5 @@ class CExtractor
     end
   end
 end
+
+Pry::Commands.add_command(ShowCSource)
