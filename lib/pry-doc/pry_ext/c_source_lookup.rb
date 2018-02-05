@@ -180,7 +180,7 @@ class ShowCSource < Pry::ClassCommand
 
       FileUtils.cd(File.expand_path("~/.pry.d/ruby-#{ruby_version}")) do
         puts "Generating tagfile!"
-        %x{ find . -type f -name "*.[chy]" > /dev/null 2>&1 | etags -  -o tags }
+        %x{ find . -type f -name "*.[chy]" | etags -  -o tags }
       end
       puts "...Finished!"
     end
