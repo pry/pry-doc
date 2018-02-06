@@ -15,7 +15,7 @@ class ShowSourceWithCInternals < Pry::Command::ShowSource
     if result
       _pry_.pager.page result
     else
-      raise CommandError, no_definition_message
+      raise Pry::CommandError, no_definition_message
     end
   end
 
