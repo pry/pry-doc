@@ -7,7 +7,7 @@ class CuteExtractor
   def extract_code(info)
     if info.original_symbol.start_with?("#define")
       extract_macro(info)
-    elsif info.original_symbol =~ /\s*struct\s*/ || info.original_symbol.start_with?("enum")
+    elsif info.original_symbol =~ /\s*(struct|enum)\s*/
       extract_struct(info)
     elsif info.original_symbol.start_with?("}")
       extract_typedef_struct(info)
