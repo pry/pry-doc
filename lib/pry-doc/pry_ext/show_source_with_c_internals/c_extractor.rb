@@ -1,119 +1,27 @@
 require 'fileutils'
 require_relative 'c_file'
+require_relative 'cute_extractor'
 
 class CExtractor
   include Pry::Helpers::Text
 
-  class << self
-    attr_accessor :file_cache
-  end
-  @file_cache = {}
-
   attr_reader :opts
+  attr_reader :cute_extractor
 
   def initialize(opts)
     @opts = opts
-  end
-
-  def balanced?(str)
-    tokens = CodeRay.scan(str, :c).tokens.each_slice(2).to_a
-    tokens.count { |v|
-      v.first =~ /{/ && v.last == :operator } == tokens.count { |v|
-      v.first =~ /}/ && v.last == :operator
-    }
-  end
-
-  def extract_struct(info)
-    source_file = source_from_file(info.file)
-    offset = 1
-    loop do
-      code = source_file[info.line, offset].join
-      break code if balanced?(code)
-      offset += 1
-    end
-  end
-
-  def extract_typedef_struct(info)
-    source_file = source_from_file(info.file)
-    offset = 1
-    loop do
-      code = source_file[info.line - offset..info.line].join
-      break code if balanced?(code)
-      offset += 1
-    end
-  end
-
-  def extract_macro(info)
-    source_file = source_from_file(info.file)
-    offset = 1
-    loop do
-      code = source_file[info.line, offset].join
-      break code unless source_file[info.line + offset - 1].strip.end_with?('\\')
-      offset += 1
-    end
-  end
-
-  def extract_typedef_oneliner(info)
-    source_file = source_from_file(info.file)
-    return source_file[info.line]
-  end
-
-  def extract_function(info)
-    source_file = source_from_file(info.file)
-    offset = 1
-
-    if source_file[info.line] !~ /\w+\s+\w\(/ && source_file[info.line - 1].strip =~ /[\w\*]$/
-      start_line = info.line - 1
-      offset += 1
-    else
-      start_line = info.line
-    end
-
-    if !source_file[info.line].strip.end_with?("{")
-      offset += 1
-    end
-
-    loop do
-      code = source_file[start_line, offset].join
-      break code if balanced?(code)
-      offset += 1
-    end
-  end
-
-  def file_cache
-    self.class.file_cache
-  end
-
-  def file_cache=(v)
-    self.class.file_cache = v
-  end
-
-  def full_path_for(file)
-    File.join(File.expand_path("~/.pry.d/ruby-#{ruby_version}"), file)
-  end
-
-  def source_from_file(file)
-    if file_cache.key?(file)
-      file_cache[file]
-    else
-      file_cache[file] = File.read(full_path_for(file)).lines
-      file_cache[file].unshift("\n")
-    end
-  end
-
-  def use_line_numbers?
-    opts.present?(:b) || opts.present?(:l)
+    @cute_extractor = CuteExtractor.new
   end
 
   def show_all_definitions(x)
     infos = self.class.symbol_map[x]
     return unless infos
 
-    result = ""
-    infos.count.times do |index|
-      result << show_first_definition(x, index) << "\n"
+    "".tap do |result|
+      infos.count.times do |index|
+        result << show_first_definition(x, index) << "\n"
+      end
     end
-    result
   end
 
   def show_first_definition(x, index=nil)
@@ -122,23 +30,20 @@ class CExtractor
 
     count = infos.count
     info = infos[index || 0]
-    code = if info.original_symbol.start_with?("#define")
-             extract_macro(info)
-           elsif info.original_symbol =~ /\s*struct\s*/ || info.original_symbol.start_with?("enum")
-             extract_struct(info)
-           elsif info.original_symbol.start_with?("}")
-             extract_typedef_struct(info)
-           elsif info.original_symbol =~/^typedef.*;$/
-             extract_typedef_oneliner(info)
-           else
-             extract_function(info)
-           end
+
+    code = cute_extractor.extract_code(info)
 
     h = "\n#{bold('From: ')}#{info.file} @ line #{info.line}:\n"
     h << "#{bold('Number of implementations:')} #{count}\n" unless index
     h << "#{bold('Number of lines: ')} #{code.lines.count}\n\n"
     h << Pry::Code.new(code, start_line_for(info.line), :c).
            with_line_numbers(use_line_numbers?).highlighted
+  end
+
+  private
+
+  def use_line_numbers?
+    opts.present?(:b) || opts.present?(:l)
   end
 
   def start_line_for(line)
@@ -164,15 +69,10 @@ class CExtractor
   end
 
   def self.tagfile
-    if !File.directory?(File.expand_path("~/.pry.d/ruby-#{ruby_version}"))
-      install_and_setup_ruby_source
-    end
+    ruby_path = File.expand_path("~/.pry.d/ruby-#{ruby_version}")
+    install_and_setup_ruby_source unless File.directory?(ruby_path)
 
-    @tagfile ||= File.read(File.expand_path("~/.pry.d/ruby-#{ruby_version}/tags"))
-  end
-
-  def ruby_version
-    self.class.ruby_version
+    @tagfile ||= File.read(File.join(ruby_path, "tags"))
   end
 
   # normalized
