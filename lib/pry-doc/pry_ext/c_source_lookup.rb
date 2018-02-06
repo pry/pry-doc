@@ -42,9 +42,9 @@ class ShowSourceWithCInternals < Pry::Command::ShowSource
 
   def extract_c_source
     if opts.present?(:all)
-      result = ShowCSource.new.show_all_definitions(obj_name)
+      result = ShowCSource.new(opts).show_all_definitions(obj_name)
     else
-      result = ShowCSource.new.show_first_definition(obj_name)
+      result = ShowCSource.new(opts).show_first_definition(obj_name)
     end
     if result
       _pry_.pager.page result
@@ -65,18 +65,18 @@ class ShowSourceWithCInternals < Pry::Command::ShowSource
   end
 end
 
-class ShowCSource < Pry::Command::ShowSource
-  match 'show-source'
-  group 'Introspection'
-  description 'show source'
+class ShowCSource
+  include Pry::Helpers::Text
 
   class << self
     attr_accessor :file_cache
   end
   @file_cache = {}
 
-  def initialize(*)
-    super
+  attr_reader :opts
+
+  def initialize(opts)
+    @opts = opts
   end
 
   def balanced?(str)
@@ -166,44 +166,6 @@ class ShowCSource < Pry::Command::ShowSource
     opts.present?(:b) || opts.present?(:l)
   end
 
-  def options(opt)
-    super(opt)
-    #      opt.on :c, "c-source", "Show source of a C symbol in MRI" if defined?(ShowCSource)
-    # opt.on :l, "line-numbers", "Show line numbers"
-    # opt.on :b, "base-one", "Show line numbers but start numbering at 1"
-    # opt.on :a, :all,  "Show all definitions of the C function"
-  end
-
-  def process
-    super
-  rescue Pry::CommandError
-    if opts.present?(:all)
-      result = ShowCSource.new.show_all_definitions(obj_name)
-    else
-      result = ShowCSource.new.show_first_definition(obj_name)
-    end
-    if result
-      _pry_.pager.page result
-    else
-      raise Pry::CommandError, no_definition_message
-    end
-  end
-
-  #   infos = self.class.symbol_map[x]
-  #   if infos.nil?
-  #     output.puts "Error: Couldn't locate a definition for #{x}"
-  #     return
-  #   end
-
-  #   if opts.present?(:all)
-  #     result = show_all_definitions(infos)
-  #   else
-  #     result = show_first_definition(infos.first, infos.count)
-  #   end
-
-  #   _pry_.pager.page result
-  # end
-
   def show_all_definitions(x)
     infos = self.class.symbol_map[x]
     return unless infos
@@ -233,18 +195,18 @@ class ShowCSource < Pry::Command::ShowSource
              extract_function(info)
            end
 
-    h = "\n#{text.bold('From: ')}#{info.file} @ line #{info.line}:\n"
-    h << "#{text.bold('Number of implementations:')} #{count}\n" unless index
-    h << "#{text.bold('Number of lines: ')} #{code.lines.count}\n\n"
-    h << Pry::Code.new(code, 1, :c).
-           with_line_numbers(false).highlighted
+    h = "\n#{bold('From: ')}#{info.file} @ line #{info.line}:\n"
+    h << "#{bold('Number of implementations:')} #{count}\n" unless index
+    h << "#{bold('Number of lines: ')} #{code.lines.count}\n\n"
+    h << Pry::Code.new(code, start_line_for(info.line), :c).
+           with_line_numbers(use_line_numbers?).highlighted
   end
 
-  def start_line_for(info)
+  def start_line_for(line)
     if opts.present?(:'base-one')
       1
     else
-      info.line || 1
+      line || 1
     end
   end
 
