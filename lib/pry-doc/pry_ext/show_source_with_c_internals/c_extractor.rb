@@ -1,71 +1,7 @@
 require 'fileutils'
+require_relative 'c_file'
 
-class CFile
-  SourceLocation = Struct.new(:file, :line, :original_symbol)
-
-  attr_accessor :symbols, :file_name
-
-  def self.from_str(str)
-    new(str).tap(&:process_symbols)
-  end
-
-  def initialize(str)
-    @lines = str.lines
-    @file_name = @lines.shift.split(",").first
-  end
-
-  def process_symbols
-    @symbols = @lines.map do |v|
-      symbol, line_number = v.split("\x7f")
-      [cleanup_symbol(symbol),
-       [SourceLocation.new(@file_name, cleanup_linenumber(line_number), symbol.strip)]]
-    end.to_h
-  end
-
-  private
-
-  def cleanup_symbol(symbol)
-    symbol = symbol.split.last
-    symbol.chomp("(").chomp("*").chomp(";")
-  end
-
-  def cleanup_linenumber(line_number)
-    line_number.split.first.to_i
-  end
-end
-
-class ShowSourceWithCInternals < Pry::Command::ShowSource
-  def options(opt)
-    super(opt)
-    opt.on :c, "c-source", "Show source of a C symbol in MRI"
-  end
-
-  def extract_c_source
-    if opts.present?(:all)
-      result = ShowCSource.new(opts).show_all_definitions(obj_name)
-    else
-      result = ShowCSource.new(opts).show_first_definition(obj_name)
-    end
-    if result
-      _pry_.pager.page result
-    else
-      raise CommandError, no_definition_message
-    end
-  end
-
-  def process
-    if opts.present?(:c)
-      extract_c_source
-      return
-    else
-      super
-    end
-  rescue Pry::CommandError
-    extract_c_source
-  end
-end
-
-class ShowCSource
+class CExtractor
   include Pry::Helpers::Text
 
   class << self
@@ -89,7 +25,6 @@ class ShowCSource
 
   def extract_struct(info)
     source_file = source_from_file(info.file)
-
     offset = 1
     loop do
       code = source_file[info.line, offset].join
@@ -153,11 +88,15 @@ class ShowCSource
     self.class.file_cache = v
   end
 
+  def full_path_for(file)
+    File.join(File.expand_path("~/.pry.d/ruby-#{ruby_version}"), file)
+  end
+
   def source_from_file(file)
     if file_cache.key?(file)
       file_cache[file]
     else
-      file_cache[file] = File.read(File.join(File.expand_path("~/.pry.d/ruby-#{ruby_version}"), file)).lines
+      file_cache[file] = File.read(full_path_for(file)).lines
       file_cache[file].unshift("\n")
     end
   end
@@ -210,19 +149,23 @@ class ShowCSource
     end
   end
 
+  def self.install_and_setup_ruby_source
+    puts "Downloading and setting up Ruby #{ruby_version} source..."
+    FileUtils.mkdir_p(File.expand_path("~/.pry.d/"))
+    FileUtils.cd(File.expand_path("~/.pry.d")) do
+      %x{ curl -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - > /dev/null 2>&1 }
+    end
+
+    FileUtils.cd(File.expand_path("~/.pry.d/ruby-#{ruby_version}")) do
+      puts "Generating tagfile!"
+      %x{ find . -type f -name "*.[chy]" | etags -  -o tags }
+    end
+    puts "...Finished!"
+  end
+
   def self.tagfile
     if !File.directory?(File.expand_path("~/.pry.d/ruby-#{ruby_version}"))
-      puts "Downloading and setting up Ruby #{ruby_version} source..."
-      FileUtils.mkdir_p(File.expand_path("~/.pry.d/"))
-      FileUtils.cd(File.expand_path("~/.pry.d")) do
-        %x{ curl -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - > /dev/null 2>&1 }
-      end
-
-      FileUtils.cd(File.expand_path("~/.pry.d/ruby-#{ruby_version}")) do
-        puts "Generating tagfile!"
-        %x{ find . -type f -name "*.[chy]" | etags -  -o tags }
-      end
-      puts "...Finished!"
+      install_and_setup_ruby_source
     end
 
     @tagfile ||= File.read(File.expand_path("~/.pry.d/ruby-#{ruby_version}/tags"))
@@ -249,6 +192,4 @@ class ShowCSource
       h.merge!(v.symbols) { |k, old_val, new_val| old_val + new_val }
     end
   end
-
-  Pry::Commands.add_command(ShowSourceWithCInternals)
 end

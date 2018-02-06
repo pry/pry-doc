@@ -1,4 +1,4 @@
-require_relative "./c_source_lookup"
+require_relative "show_source_with_c_internals"
 
 class Pry
   module MethodInfo
