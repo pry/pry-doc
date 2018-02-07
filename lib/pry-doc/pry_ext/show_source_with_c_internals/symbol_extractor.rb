@@ -91,6 +91,7 @@ class SymbolExtractor
     if file_cache.key?(file)
       file_cache[file]
     else
+      # inject a "\n" as first element to align array index and line number
       file_cache[file] = ["\n", *File.read(full_path_for(file)).lines]
     end
   end
