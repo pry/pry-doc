@@ -85,7 +85,7 @@ int
 foo(void) {
 }
 EOF
-        ).or include <<~EOF
+        ).or include <<EOF
 char
 foo(int*) {
   return 'a';
