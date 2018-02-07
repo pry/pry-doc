@@ -12,7 +12,7 @@ puts "Testing pry-doc version #{PryDoc::VERSION}..."
 puts "Ruby version: #{RUBY_VERSION}"
 
 RSpec.describe PryDoc do
-  describe CodeFetcher do
+  describe Pry::CInternals::CodeFetcher do
     def decolor(str)
       Pry::Helpers::Text.strip_color(str)
     end
@@ -34,7 +34,7 @@ RSpec.describe PryDoc do
     context "with line numbers" do
       context "normal style (actual line numbers)" do
         it "displays actual line numbers" do
-          code = decolor(CodeFetcher.new(line_number_style: :'line-numbers').fetch_first_definition("bar"))
+          code = decolor(described_class.new(line_number_style: :'line-numbers').fetch_first_definition("bar"))
           expect(code).to include <<~EOF
             11: enum bar {
             12:   alpha,
@@ -46,7 +46,7 @@ RSpec.describe PryDoc do
 
         context "base one style (line numbers start with 1)" do
           it "displays actual line numbers" do
-            code = decolor(CodeFetcher.new(line_number_style: :'base-one').fetch_first_definition("bar"))
+            code = decolor(described_class.new(line_number_style: :'base-one').fetch_first_definition("bar"))
             expect(code).to include <<~EOF
               1: enum bar {
               2:   alpha,
@@ -61,7 +61,7 @@ RSpec.describe PryDoc do
 
     describe "#fetch_all_definitions" do
       it "returns the code for all symbols" do
-        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_all_definitions("foo"))
+        code = decolor(described_class.new(line_number_style: nil).fetch_all_definitions("foo"))
         expect(code).to include <<~EOF
           int
           foo(void) {
@@ -79,7 +79,7 @@ RSpec.describe PryDoc do
 
     describe "#fetch_first_definition" do
       it "returns the code for a function" do
-        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("foo"))
+        code = decolor(described_class.new(line_number_style: nil).fetch_first_definition("foo"))
         expect(code).to include( <<~EOF
           int
           foo(void) {
@@ -94,7 +94,7 @@ RSpec.describe PryDoc do
       end
 
       it "returns the code for an enum" do
-        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("bar"))
+        code = decolor(described_class.new(line_number_style: nil).fetch_first_definition("bar"))
         expect(code).to include <<~EOF
           enum bar {
             alpha,
@@ -105,19 +105,19 @@ RSpec.describe PryDoc do
       end
 
       it "returns the code for a macro" do
-        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("baby"))
+        code = decolor(described_class.new(line_number_style: nil).fetch_first_definition("baby"))
         expect(code).to include('#define baby do {')
         expect(code).to include('printf("baby");')
         expect(code).to include('while(0)')
       end
 
       it "returns the code for a typedef" do
-        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("wassup"))
+        code = decolor(described_class.new(line_number_style: nil).fetch_first_definition("wassup"))
         expect(code).to include('typedef int wassup;')
       end
 
       it "returns the code for a struct" do
-        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("baz"))
+        code = decolor(described_class.new(line_number_style: nil).fetch_first_definition("baz"))
         expect(code).to include <<~EOF
           struct baz {
             int x;
