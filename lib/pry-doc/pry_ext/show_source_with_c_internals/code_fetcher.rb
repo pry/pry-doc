@@ -86,9 +86,10 @@ module Pry::CInternals
     end
 
     def self.tagfile
-      install_and_setup_ruby_source unless File.directory?(ruby_source_folder)
+      tags = File.join(ruby_source_folder, "tags")
+      install_and_setup_ruby_source unless File.exists?(tags)
 
-      @tagfile ||= File.read(File.join(ruby_source_folder, "tags"))
+      @tagfile ||= File.read(tags)
     end
 
     def self.check_for_error(message)
