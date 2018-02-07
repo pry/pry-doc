@@ -4,7 +4,11 @@ class SymbolExtractor
   end
   @file_cache = {}
 
-  def extract_code(info)
+  def initialize(ruby_source_folder)
+    @ruby_source_folder = ruby_source_folder
+  end
+
+  def extract(info)
     if info.original_symbol.start_with?("#define")
       extract_macro(info)
     elsif info.original_symbol =~ /\s*(struct|enum)\s*/
@@ -59,7 +63,7 @@ class SymbolExtractor
     source_file = source_from_file(info.file)
     offset = 1
 
-    if source_file[info.line] !~ /\w+\s+\w\(/ && source_file[info.line - 1].strip =~ /[\w\*]$/
+    if source_file[info.line] !~ /\w+\s*\*?\s+\w+\(/ && source_file[info.line - 1].strip =~ /[\w\*]$/
       start_line = info.line - 1
       offset += 1
     else
@@ -97,7 +101,7 @@ class SymbolExtractor
   end
 
   def full_path_for(file)
-    File.join(File.expand_path("~/.pry.d/ruby-#{ruby_version}"), file)
+    File.join(@ruby_source_folder, file)
   end
 
   # normalized
