@@ -12,6 +12,23 @@ puts "Testing pry-doc version #{PryDoc::VERSION}..."
 puts "Ruby version: #{RUBY_VERSION}"
 
 RSpec.describe PryDoc do
+  describe Pry::CodeFetcher do
+    before(:all) do
+      def described_class.ruby_source_folder
+        File.join(File.dirname(__FILE__), "fixtures/c_source")
+      end
+    end
+
+    describe ".symbol_map" do
+      it "generates the map with the correct symbols" do
+        expect(described_class.symbol_map).to have_key("foo")
+        expect(described_class.symbol_map).to have_key("baby")
+        expect(described_class.symbol_map).to have_key("wassup")
+        expect(described_class.symbol_map).to have_key("bar")
+        expect(described_class.symbol_map).to have_key("baz")
+      end
+    end
+  end
 
   describe "core C methods" do
     it 'should look up core (C) methods' do
@@ -193,5 +210,4 @@ RSpec.describe PryDoc do
       end
     end
   end
-
 end
