@@ -10,6 +10,9 @@
 class CFile
   SourceLocation = Struct.new(:file, :line, :original_symbol)
 
+  # Used to separate symbol from line number
+  SYMBOL_SEPARATOR = "\x7f"
+
   attr_accessor :symbols, :file_name
 
   def self.from_str(str)
@@ -23,7 +26,7 @@ class CFile
 
   def process_symbols
     @symbols = @lines.map do |v|
-      symbol, line_number = v.split("\x7f")
+      symbol, line_number = v.split(SYMBOL_SEPARATOR)
       [cleanup_symbol(symbol),
        [SourceLocation.new(@file_name, cleanup_linenumber(line_number), symbol.strip)]]
     end.to_h
