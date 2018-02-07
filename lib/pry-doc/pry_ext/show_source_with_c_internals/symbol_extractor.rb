@@ -25,33 +25,21 @@ module Pry::CInternals
 
     private
 
+    def extract_macro(info)
+      extract_code(info) do |code|
+        return code unless code.lines.last.strip.end_with?('\\')
+      end
+    end
+
     def extract_struct(info)
-      source_file = source_from_file(info.file)
-      offset = 1
-      loop do
-        code = source_file[info.line, offset].join
+      extract_code(info) do |code|
         return code if balanced?(code)
-        offset += 1
       end
     end
 
     def extract_typedef_struct(info)
-      source_file = source_from_file(info.file)
-      offset = 1
-      loop do
-        code = source_file[info.line - offset..info.line].join
+      extract_code(info) do |code, direction: :reverse|
         return code if balanced?(code)
-        offset += 1
-      end
-    end
-
-    def extract_macro(info)
-      source_file = source_from_file(info.file)
-      offset = 1
-      loop do
-        code = source_file[info.line, offset].join
-        return code unless source_file[info.line + offset - 1].strip.end_with?('\\')
-        offset += 1
       end
     end
 
@@ -63,23 +51,42 @@ module Pry::CInternals
     def extract_function(info)
       source_file = source_from_file(info.file)
       offset = 1
+      start_line = info.line
 
-      if source_file[info.line] !~ /\w+\s*\*?\s+\w+\(/ && source_file[info.line - 1].strip =~ /[\w\*]$/
+      if !complete_function_signature?(source_file[info.line]) && function_return_type?(source_file[info.line - 1])
         start_line = info.line - 1
         offset += 1
-      else
-        start_line = info.line
       end
 
       if !source_file[info.line].strip.end_with?("{")
         offset += 1
       end
 
-      loop do
-        code = source_file[start_line, offset].join
+      extract_code(info, offset: offset, start_line: start_line) do |code|
         return code if balanced?(code)
+      end
+    end
+
+    def extract_code(info, offset: 1, start_line: info.line, direction: :forward, &block)
+      source_file = source_from_file(info.file)
+
+      loop do
+        code = if direction == :reverse
+                 source_file[start_line - offset..info.line].join
+               else
+                 source_file[start_line, offset].join
+               end
+        yield code
         offset += 1
       end
+    end
+
+    def complete_function_signature?(str)
+      str =~ /\w+\s*\*?\s+\w+\(/
+    end
+
+    def function_return_type?(str)
+      str.strip =~ /[\w\*]$/
     end
 
     def balanced?(str)
