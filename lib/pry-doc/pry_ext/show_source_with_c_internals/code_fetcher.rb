@@ -31,11 +31,13 @@ class CodeFetcher
     info = infos[index || 0]
     code = symbol_extractor.extract_code(info)
 
-    h = "\n#{bold('From: ')}#{info.file} @ line #{info.line}:\n"
-    h << "#{bold('Number of implementations:')} #{infos.count}\n" unless index
-    h << "#{bold('Number of lines: ')} #{code.lines.count}\n\n"
-    h << Pry::Code.new(code, start_line_for(info.line), :c).
-           with_line_numbers(use_line_numbers?).highlighted
+    "".tap do |result|
+      result << "\n#{bold('From: ')}#{info.file} @ line #{info.line}:\n"
+      result << "#{bold('Number of implementations:')} #{infos.count}\n" unless index
+      result << "#{bold('Number of lines: ')} #{code.lines.count}\n\n"
+      result << Pry::Code.new(code, start_line_for(info.line), :c).
+                  with_line_numbers(use_line_numbers?).highlighted
+    end
   end
 
   private
