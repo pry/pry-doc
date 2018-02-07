@@ -14,11 +14,11 @@ class CodeFetcher
 
   self.ruby_source_folder = File.join(File.expand_path("~/.pry.d"), "ruby-#{ruby_version}")
 
-  attr_reader :opts
+  attr_reader :line_number_style
   attr_reader :symbol_extractor
 
-  def initialize(opts)
-    @opts = opts
+  def initialize(line_number_style: nil)
+    @line_number_style = line_number_style
     @symbol_extractor = SymbolExtractor.new(self.class.ruby_source_folder)
   end
 
@@ -52,11 +52,11 @@ class CodeFetcher
   private
 
   def use_line_numbers?
-    opts.present?(:b) || opts.present?(:l)
+    !!line_number_style
   end
 
   def start_line_for(line)
-    if opts.present?(:'base-one')
+    if line_number_style == :'base-one'
       1
     else
       line || 1

@@ -12,11 +12,13 @@ puts "Testing pry-doc version #{PryDoc::VERSION}..."
 puts "Ruby version: #{RUBY_VERSION}"
 
 RSpec.describe PryDoc do
-  describe Pry::CodeFetcher do
+  describe CodeFetcher do
+    def decolor(str)
+      Pry::Helpers::Text.strip_color(str)
+    end
+
     before(:all) do
-      def described_class.ruby_source_folder
-        File.join(File.dirname(__FILE__), "fixtures/c_source")
-      end
+      described_class.ruby_source_folder = File.join(File.dirname(__FILE__), "fixtures/c_source")
     end
 
     describe ".symbol_map" do
@@ -26,6 +28,78 @@ RSpec.describe PryDoc do
         expect(described_class.symbol_map).to have_key("wassup")
         expect(described_class.symbol_map).to have_key("bar")
         expect(described_class.symbol_map).to have_key("baz")
+      end
+    end
+
+    context "with line numbers" do
+      context "normal style (actual line numbers)" do
+        it "displays actual line numbers" do
+          code = decolor(CodeFetcher.new(line_number_style: :'line-numbers').fetch_first_definition("bar"))
+          expect(code).to include <<~EOF
+            11: enum bar {
+            12:   alpha,
+            13:   beta,
+            14:   gamma
+            15: };
+          EOF
+        end
+
+        context "base one style (line numbers start with 1)" do
+          it "displays actual line numbers" do
+            code = decolor(CodeFetcher.new(line_number_style: :'base-one').fetch_first_definition("bar"))
+            expect(code).to include <<~EOF
+              1: enum bar {
+              2:   alpha,
+              3:   beta,
+              4:   gamma
+              5: };
+            EOF
+          end
+        end
+      end
+    end
+
+    describe "#fetch_first_definition" do
+      it "returns the code for a function" do
+        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("foo"))
+        expect(code).to include <<~EOF
+          int
+          foo(void) {
+          }
+        EOF
+      end
+
+      it "returns the code for an enum" do
+        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("bar"))
+        expect(code).to include <<~EOF
+          enum bar {
+            alpha,
+            beta,
+            gamma
+          };
+        EOF
+      end
+
+      it "returns the code for a macro" do
+        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("baby"))
+        expect(code).to include('#define baby do {')
+        expect(code).to include('printf("baby");')
+        expect(code).to include('while(0)')
+      end
+
+      it "returns the code for a typedef" do
+        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("wassup"))
+        expect(code).to include('typedef int wassup;')
+      end
+
+      it "returns the code for a struct" do
+        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("baz"))
+        expect(code).to include <<~EOF
+          struct baz {
+            int x;
+            int y;
+          };
+        EOF
       end
     end
   end
