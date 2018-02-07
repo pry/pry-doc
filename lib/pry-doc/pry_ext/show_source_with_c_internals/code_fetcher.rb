@@ -91,16 +91,22 @@ module Pry::CInternals
       @tagfile ||= File.read(File.join(ruby_source_folder, "tags"))
     end
 
+    def self.check_for_error(message)
+      raise Pry::CommandError, message if $?.to_i != 0
+    end
+
     def self.install_and_setup_ruby_source
-      puts "Downloading and setting up Ruby #{ruby_version} source..."
+      puts "Downloading and setting up Ruby #{ruby_version} source in attempt to resolve symbol..."
       FileUtils.mkdir_p(ruby_source_folder)
       FileUtils.cd(File.dirname(ruby_source_folder)) do
         %x{ curl -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - > /dev/null 2>&1 }
+        check_for_error("curl")
       end
 
       FileUtils.cd(ruby_source_folder) do
         puts "Generating tagfile!"
         %x{ find . -type f -name "*.[chy]" | etags - --no-members -o tags }
+        check_for_error("find | etags")
       end
       puts "...Finished!"
     end
