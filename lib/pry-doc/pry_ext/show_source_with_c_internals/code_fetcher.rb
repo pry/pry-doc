@@ -19,7 +19,7 @@ class CodeFetcher
 
     "".tap do |result|
       infos.count.times do |index|
-        result << show_first_definition(symbol, index) << "\n"
+        result << fetch_first_definition(symbol, index) << "\n"
       end
     end
   end
@@ -28,13 +28,11 @@ class CodeFetcher
     infos = self.class.symbol_map[symbol]
     return unless infos
 
-    count = infos.count
     info = infos[index || 0]
-
     code = symbol_extractor.extract_code(info)
 
     h = "\n#{bold('From: ')}#{info.file} @ line #{info.line}:\n"
-    h << "#{bold('Number of implementations:')} #{count}\n" unless index
+    h << "#{bold('Number of implementations:')} #{infos.count}\n" unless index
     h << "#{bold('Number of lines: ')} #{code.lines.count}\n\n"
     h << Pry::Code.new(code, start_line_for(info.line), :c).
            with_line_numbers(use_line_numbers?).highlighted
