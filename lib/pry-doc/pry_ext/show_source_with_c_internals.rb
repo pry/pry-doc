@@ -14,6 +14,7 @@ module Pry::CInternals
         result, file = CodeFetcher.new(line_number_style).fetch_first_definition(obj_name)
       end
       if result
+        set_file_and_dir_locals(file)
         _pry_.pager.page result
       else
         raise Pry::CommandError, no_definition_message
