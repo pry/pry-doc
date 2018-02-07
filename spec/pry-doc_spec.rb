@@ -59,12 +59,36 @@ RSpec.describe PryDoc do
       end
     end
 
-    describe "#fetch_first_definition" do
-      it "returns the code for a function" do
-        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("foo"))
+    describe "#fetch_all_definitions" do
+      it "returns the code for all symbols" do
+        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_all_definitions("foo"))
         expect(code).to include <<~EOF
           int
           foo(void) {
+          }
+        EOF
+
+        expect(code).to include <<~EOF
+          char
+          foo(int*) {
+            return 'a';
+          }
+        EOF
+      end
+    end
+
+    describe "#fetch_first_definition" do
+      it "returns the code for a function" do
+        code = decolor(CodeFetcher.new(line_number_style: nil).fetch_first_definition("foo"))
+        expect(code).to include( <<~EOF
+          int
+          foo(void) {
+          }
+        EOF
+        ).or include <<~EOF
+          char
+          foo(int*) {
+            return 'a';
           }
         EOF
       end
