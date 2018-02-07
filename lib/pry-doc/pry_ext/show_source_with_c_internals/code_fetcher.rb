@@ -100,7 +100,7 @@ module Pry::CInternals
 
       FileUtils.cd(ruby_source_folder) do
         puts "Generating tagfile!"
-        %x{ find . -type f -name "*.[chy]" | etags -  -o tags }
+        %x{ find . -type f -name "*.[chy]" | etags - --no-members -o tags }
       end
       puts "...Finished!"
     end

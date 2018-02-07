@@ -14,7 +14,7 @@ require "#{direc}/lib/#{PROJECT_NAME}/version"
 
 desc "generate fixture etags"
 task :etags do
-  sh 'etags spec/fixtures/c_source/*.c -o spec/fixtures/c_source/tags'
+  sh 'etags --no-members spec/fixtures/c_source/*.c -o spec/fixtures/c_source/tags'
 end
 desc "reinstall gem"
 task :reinstall => :gems do
