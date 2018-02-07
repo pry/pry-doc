@@ -1,3 +1,12 @@
+# Data looks like:
+#
+# thread.c,11784
+# static VALUE rb_cThreadShield;<\x7f>86,2497
+# static VALUE sym_immediate;<\x7f>88,2529
+# static VALUE sym_on_blocking;<\x7f>89,2557
+
+# First line is the name of the file
+# Following lines are the symbols followed by line number with char 127 as separator.
 class CFile
   SourceLocation = Struct.new(:file, :line, :original_symbol)
 

@@ -1,37 +1,37 @@
 require 'fileutils'
 require_relative 'c_file'
-require_relative 'cute_extractor'
+require_relative 'symbol_extractor'
 
-class CExtractor
+class CodeFetcher
   include Pry::Helpers::Text
 
   attr_reader :opts
-  attr_reader :cute_extractor
+  attr_reader :symbol_extractor
 
   def initialize(opts)
     @opts = opts
-    @cute_extractor = CuteExtractor.new
+    @symbol_extractor = SymbolExtractor.new
   end
 
-  def show_all_definitions(x)
-    infos = self.class.symbol_map[x]
+  def fetch_all_definitions(symbol)
+    infos = self.class.symbol_map[symbol]
     return unless infos
 
     "".tap do |result|
       infos.count.times do |index|
-        result << show_first_definition(x, index) << "\n"
+        result << show_first_definition(symbol, index) << "\n"
       end
     end
   end
 
-  def show_first_definition(x, index=nil)
-    infos = self.class.symbol_map[x]
+  def fetch_first_definition(symbol, index=nil)
+    infos = self.class.symbol_map[symbol]
     return unless infos
 
     count = infos.count
     info = infos[index || 0]
 
-    code = cute_extractor.extract_code(info)
+    code = symbol_extractor.extract_code(info)
 
     h = "\n#{bold('From: ')}#{info.file} @ line #{info.line}:\n"
     h << "#{bold('Number of implementations:')} #{count}\n" unless index
@@ -54,14 +54,18 @@ class CExtractor
     end
   end
 
+  def self.ruby_container_folder
+    File.expand_path("~/.pry.d/")
+  end
+
   def self.install_and_setup_ruby_source
     puts "Downloading and setting up Ruby #{ruby_version} source..."
-    FileUtils.mkdir_p(File.expand_path("~/.pry.d/"))
-    FileUtils.cd(File.expand_path("~/.pry.d")) do
+    FileUtils.mkdir_p(ruby_container_folder)
+    FileUtils.cd(ruby_container_folder) do
       %x{ curl -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - > /dev/null 2>&1 }
     end
 
-    FileUtils.cd(File.expand_path("~/.pry.d/ruby-#{ruby_version}")) do
+    FileUtils.cd(File.join(ruby_container_folder, "ruby-#{ruby_version}")) do
       puts "Generating tagfile!"
       %x{ find . -type f -name "*.[chy]" | etags -  -o tags }
     end
@@ -69,7 +73,7 @@ class CExtractor
   end
 
   def self.tagfile
-    ruby_path = File.expand_path("~/.pry.d/ruby-#{ruby_version}")
+    ruby_path = File.join(ruby_container_folder, "ruby-#{ruby_version}")
     install_and_setup_ruby_source unless File.directory?(ruby_path)
 
     @tagfile ||= File.read(File.join(ruby_path, "tags"))

@@ -1,4 +1,4 @@
-class CuteExtractor
+class SymbolExtractor
   class << self
     attr_accessor :file_cache
   end
@@ -22,6 +22,7 @@ class CuteExtractor
 
   def extract_struct(info)
     source_file = source_from_file(info.file)
+    offset = 1
     loop do
       code = source_file[info.line, offset].join
       return code if balanced?(code)

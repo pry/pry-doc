@@ -1,4 +1,4 @@
-require_relative "show_source_with_c_internals/c_extractor"
+require_relative "show_source_with_c_internals/code_fetcher"
 
 class ShowSourceWithCInternals < Pry::Command::ShowSource
   def options(opt)
@@ -6,11 +6,11 @@ class ShowSourceWithCInternals < Pry::Command::ShowSource
     opt.on :c, "c-source", "Show source of a C symbol in MRI"
   end
 
-  def extract_c_source
+  def show_c_source
     if opts.present?(:all)
-      result = CExtractor.new(opts).show_all_definitions(obj_name)
+      result = CodeFetcher.new(opts).fetch_all_definitions(obj_name)
     else
-      result = CExtractor.new(opts).show_first_definition(obj_name)
+      result = CodeFetcher.new(opts).fetch_first_definition(obj_name)
     end
     if result
       _pry_.pager.page result
@@ -21,13 +21,13 @@ class ShowSourceWithCInternals < Pry::Command::ShowSource
 
   def process
     if opts.present?(:c)
-      extract_c_source
+      show_c_source
       return
     else
       super
     end
   rescue Pry::CommandError
-    extract_c_source
+    show_c_source
   end
 
   Pry::Commands.add_command(ShowSourceWithCInternals)
