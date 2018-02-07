@@ -9,9 +9,9 @@ module Pry::CInternals
 
     def show_c_source
       if opts.present?(:all)
-        result = CodeFetcher.new(line_number_style).fetch_all_definitions(obj_name)
+        result, file = CodeFetcher.new(line_number_style).fetch_all_definitions(obj_name)
       else
-        result = CodeFetcher.new(line_number_style).fetch_first_definition(obj_name)
+        result, file = CodeFetcher.new(line_number_style).fetch_first_definition(obj_name)
       end
       if result
         _pry_.pager.page result

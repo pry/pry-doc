@@ -29,8 +29,10 @@ module Pry::CInternals
 
       "".tap do |result|
         infos.count.times do |index|
-          result << fetch_first_definition(symbol, index) << "\n"
+          result << fetch_first_definition(symbol, index).first << "\n"
         end
+
+        return [result, full_path_for(infos.first.file)]
       end
     end
 
@@ -47,10 +49,16 @@ module Pry::CInternals
         result << "#{bold('Number of lines: ')} #{code.lines.count}\n\n"
         result << Pry::Code.new(code, start_line_for(info.line), :c).
                     with_line_numbers(use_line_numbers?).highlighted
+
+        return [result, full_path_for(info.file)]
       end
     end
 
     private
+
+    def full_path_for(file)
+      File.join(self.class.ruby_source_folder, file)
+    end
 
     def use_line_numbers?
       !!line_number_style
