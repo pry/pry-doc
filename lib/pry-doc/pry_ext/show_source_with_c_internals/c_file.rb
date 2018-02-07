@@ -26,11 +26,13 @@ module Pry::CInternals
     end
 
     def process_symbols
-      @symbols = @lines.map do |v|
+      array = @lines.map do |v|
         symbol, line_number = v.split(SYMBOL_SEPARATOR)
         [cleanup_symbol(symbol),
          [SourceLocation.new(@file_name, cleanup_linenumber(line_number), symbol.strip)]]
-      end.to_h
+      end
+
+      @symbols = Hash[array]
     end
 
     private
