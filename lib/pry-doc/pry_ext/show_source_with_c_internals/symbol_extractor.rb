@@ -94,7 +94,7 @@ module Pry::CInternals
     end
 
     def token_count(tokens, token)
-      tokens.count { |v|  v.first.include?(token) && v.last == :operator }
+      tokens.count { |v| v.first.include?(token) && v.last == :operator }
     end
 
     def source_from_file(file)

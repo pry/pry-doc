@@ -9,9 +9,11 @@ module Pry::CInternals
 
     def show_c_source
       if opts.present?(:all)
-        result, file = CodeFetcher.new(line_number_style).fetch_all_definitions(obj_name)
+        result, file = CodeFetcher.new(line_number_style: line_number_style)
+                         .fetch_all_definitions(obj_name)
       else
-        result, file = CodeFetcher.new(line_number_style).fetch_first_definition(obj_name)
+        result, file = CodeFetcher.new(line_number_style: line_number_style)
+                         .fetch_first_definition(obj_name)
       end
       if result
         set_file_and_dir_locals(file)
@@ -38,15 +40,13 @@ module Pry::CInternals
     # We can number lines with their actual line numbers
     # or starting with 1 (base-one)
     def line_number_style
-      style = if opts.present?(:'base-one')
-                :'base-one'
-              elsif opts.present?(:'line-numbers')
-                :'line-numbers'
-              else
-                nil
-              end
-
-      { line_number_style: style }
+      if opts.present?(:'base-one')
+        :'base-one'
+      elsif opts.present?(:'line-numbers')
+        :'line-numbers'
+      else
+        nil
+      end
     end
 
     Pry::Commands.add_command(ShowSourceWithCInternals)
