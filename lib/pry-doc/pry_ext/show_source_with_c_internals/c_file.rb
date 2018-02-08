@@ -9,7 +9,7 @@
 # Following lines are the symbols followed by line number with char 127 as separator.
 module Pry::CInternals
   class CFile
-    SourceLocation = Struct.new(:file, :line, :original_symbol)
+    SourceLocation = Struct.new(:file, :line, :symbol_type)
 
     # Used to separate symbol from line number
     SYMBOL_SEPARATOR = "\x7f"
@@ -34,7 +34,23 @@ module Pry::CInternals
 
     def source_location_for(symbol, line_number)
       SourceLocation.new(full_path_for(@file_name),
-                         cleanup_linenumber(line_number), symbol.strip)
+                         cleanup_linenumber(line_number), symbol_type_for(symbol.strip))
+    end
+
+    def symbol_type_for(symbol)
+      if symbol.start_with?("#define")
+        :macro
+      elsif symbol =~ /\b(struct|enum)\b/
+        :struct
+      elsif symbol.start_with?("}")
+        :typedef_struct
+      elsif symbol =~/^typedef.*;$/
+        :typedef_oneliner
+      elsif symbol =~ /\($/
+        :function
+      else
+        :unknown
+      end
     end
 
     def full_path_for(file)

@@ -27,13 +27,12 @@ module Pry::CInternals
       infos = self.class.symbol_map[symbol]
       return unless infos
 
-      "".tap do |result|
-        infos.count.times do |index|
-          result << fetch_first_definition(symbol, index).first << "\n"
-        end
-
-        return [result, infos.first.file]
+      result = ""
+      infos.count.times do |index|
+        result << fetch_first_definition(symbol, index).first << "\n"
       end
+
+      return [result, infos.first.file]
     end
 
     def fetch_first_definition(symbol, index=nil)
@@ -43,22 +42,18 @@ module Pry::CInternals
       info = infos[index || 0]
       code = symbol_extractor.extract(info)
 
-      "".tap do |result|
-        result << "\n#{bold('From: ')}#{info.file} @ line #{info.line}:\n"
-        result << "#{bold('Number of implementations:')} #{infos.count}\n" unless index
-        result << "#{bold('Number of lines: ')} #{code.lines.count}\n\n"
-        result << Pry::Code.new(code, start_line_for(info.line), :c).
-                    with_line_numbers(use_line_numbers?).highlighted
+      result = ""
+      result << "\n#{bold('From: ')}#{info.file} @ line #{info.line}:\n"
+      result << "#{bold('Number of implementations:')} #{infos.count}\n" unless index
+      result << "#{bold('Number of lines: ')} #{code.lines.count}\n\n"
+      result << Pry::Code.new(code, start_line_for(info.line), :c).
+                  with_line_numbers(use_line_numbers?).highlighted
 
-        return [result, info.file]
-      end
+      return [result, info.file]
+
     end
 
     private
-
-    def full_path_for(file)
-      File.join(self.class.ruby_source_folder, file)
-    end
 
     def use_line_numbers?
       !!line_number_style

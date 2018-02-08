@@ -10,16 +10,20 @@ module Pry::CInternals
     end
 
     def extract(info)
-      if info.original_symbol.start_with?("#define")
+      case info.symbol_type
+      when :macro
         extract_macro(info)
-      elsif info.original_symbol =~ /\s+(struct|enum)\s+/
+      when :struct
         extract_struct(info)
-      elsif info.original_symbol.start_with?("}")
+      when :typedef_struct
         extract_typedef_struct(info)
-      elsif info.original_symbol =~/^typedef.*;$/
-        extract_typedef_oneliner(info)
-      else
+      when :typedef_oneliner
+        extract_oneliner(info)
+      when :function
         extract_function(info)
+      else
+        # if we dont know what it is, just extract out a single line
+        extract_oneliner(info)
       end
     end
 
@@ -43,7 +47,7 @@ module Pry::CInternals
       end
     end
 
-    def extract_typedef_oneliner(info)
+    def extract_oneliner(info)
       source_file = source_from_file(info.file)
       return source_file[info.line]
     end
