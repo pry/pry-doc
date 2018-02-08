@@ -4,7 +4,7 @@ module Pry::CInternals
   class ShowSourceWithCInternals < Pry::Command::ShowSource
     def options(opt)
       super(opt)
-      opt.on :c, "c-source", "Show source of a C symbol in MRI (rather than Ruby method of same name)"
+      opt.on :c, "c-source", "Show source of a C identifier in MRI (rather than Ruby method of same name)"
     end
 
     def show_c_source
