@@ -67,13 +67,14 @@ module Pry::CInternals
     def extract_code(info, offset: 1, start_line: info.line, direction: :forward, &block)
       source_file = source_from_file(info.file)
 
+      code_proc = if direction == :reverse
+                    -> { source_file[start_line - offset..info.line].join }
+                  else
+                    -> { source_file[start_line, offset].join }
+                  end
+
       loop do
-        code = if direction == :reverse
-                 source_file[start_line - offset..info.line].join
-               else
-                 source_file[start_line, offset].join
-               end
-        yield code
+        yield code_proc.()
         offset += 1
       end
     end
