@@ -17,7 +17,7 @@ module Pry::CInternals
     attr_accessor :symbols, :file_name
     attr_reader :ruby_source_folder
 
-    def initialize(str, ruby_source_folder:)
+    def initialize(str, ruby_source_folder: nil)
       @ruby_source_folder = ruby_source_folder
       @lines = str.lines
       @file_name = @lines.shift.split(",").first
