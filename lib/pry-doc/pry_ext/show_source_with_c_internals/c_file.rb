@@ -15,27 +15,31 @@ module Pry::CInternals
     SYMBOL_SEPARATOR = "\x7f"
 
     attr_accessor :symbols, :file_name
+    attr_reader :ruby_source_folder
 
-    def self.from_str(str)
-      new(str).tap(&:process_symbols)
-    end
-
-    def initialize(str)
+    def initialize(str, ruby_source_folder:)
+      @ruby_source_folder = ruby_source_folder
       @lines = str.lines
       @file_name = @lines.shift.split(",").first
     end
 
     def process_symbols
-      array = @lines.map do |v|
+      @symbols = @lines.each_with_object({}) do |v, h|
         symbol, line_number = v.split(SYMBOL_SEPARATOR)
-        [cleanup_symbol(symbol),
-         [SourceLocation.new(@file_name, cleanup_linenumber(line_number), symbol.strip)]]
+        h[cleanup_symbol(symbol)] = [source_location_for(symbol, line_number)]
       end
-
-      @symbols = Hash[array]
     end
 
     private
+
+    def source_location_for(symbol, line_number)
+      SourceLocation.new(full_path_for(@file_name),
+                         cleanup_linenumber(line_number), symbol.strip)
+    end
+
+    def full_path_for(file)
+      File.join(ruby_source_folder, file)
+    end
 
     def cleanup_symbol(symbol)
       symbol = symbol.split.last

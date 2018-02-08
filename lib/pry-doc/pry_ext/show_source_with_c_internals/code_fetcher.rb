@@ -32,7 +32,7 @@ module Pry::CInternals
           result << fetch_first_definition(symbol, index).first << "\n"
         end
 
-        return [result, full_path_for(infos.first.file)]
+        return [result, infos.first.file]
       end
     end
 
@@ -50,7 +50,7 @@ module Pry::CInternals
         result << Pry::Code.new(code, start_line_for(info.line), :c).
                     with_line_numbers(use_line_numbers?).highlighted
 
-        return [result, full_path_for(info.file)]
+        return [result, info.file]
       end
     end
 
@@ -81,7 +81,7 @@ module Pry::CInternals
 
     def self.parse_tagfile
       @c_files ||= tagfile.split("\f\n")[1..-1].map do |v|
-        CFile.from_str(v)
+        CFile.new(v, ruby_source_folder: ruby_source_folder).tap(&:process_symbols)
       end
     end
 

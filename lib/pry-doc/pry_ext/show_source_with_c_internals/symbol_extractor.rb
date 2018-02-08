@@ -99,12 +99,8 @@ module Pry::CInternals
         file_cache[file]
       else
         # inject a "\n" as first element to align array index and line number
-        file_cache[file] = ["\n", *File.read(full_path_for(file)).lines]
+        file_cache[file] = ["\n", *File.read(file).lines]
       end
-    end
-
-    def full_path_for(file)
-      File.join(@ruby_source_folder, file)
     end
 
     # normalized

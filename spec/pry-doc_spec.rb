@@ -47,6 +47,12 @@ RSpec.describe PryDoc do
     end
 
     describe "#fetch_all_definitions" do
+      it "returns both code and file name" do
+        file_ = described_class.symbol_map["foo"].first.file
+        _, file = described_class.new(line_number_style: nil).fetch_all_definitions("foo")
+        expect(file).to eq file_
+      end
+
       it "returns the code for all symbols" do
         code, = described_class.new(line_number_style: nil).fetch_all_definitions("foo")
         expect(decolor code).to include <<EOF
@@ -65,6 +71,12 @@ EOF
     end
 
     describe "#fetch_first_definition" do
+      it "returns both code and file name" do
+        code, file = described_class.new(line_number_style: nil).fetch_first_definition("wassup")
+        expect(decolor code).to include "typedef int wassup;"
+        expect(file).to eq File.join(__dir__, "fixtures/c_source/hello.c")
+      end
+
       context "with line numbers" do
         context "normal style (actual line numbers)" do
           it "displays actual line numbers" do
@@ -177,7 +189,7 @@ EOF
           end
         end
 
-        context "curl brackets on subsequent line" do
+        context "curly brackets on subsequent line" do
           subject do
             decolor described_class.new(line_number_style: nil)
                       .fetch_first_definition("lala")
