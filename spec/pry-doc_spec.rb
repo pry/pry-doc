@@ -17,8 +17,20 @@ RSpec.describe PryDoc do
       Pry::Helpers::Text.strip_color(str)
     end
 
-    before(:all) do
+    before do
       described_class.ruby_source_folder = File.join(File.dirname(__FILE__), "fixtures/c_source")
+    end
+
+    context "no tags file exists" do
+      it "attempts to install and setup ruby" do
+        described_class.ruby_source_folder = File.join(File.dirname(__FILE__), "fishface")
+        expect(described_class).to receive(:install_and_setup_ruby_source)
+
+        # will try to read from the 'created' tags file, this will error, so rescue
+        # (since we're stubbing out `install_and_setup_ruby_source` no tags file
+        # ever gets created)
+        described_class.tagfile rescue nil
+      end
     end
 
     describe ".symbol_map" do
