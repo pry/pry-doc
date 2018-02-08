@@ -125,6 +125,28 @@ struct baz {
 };
 EOF
       end
+
+      it "returns the code for a typedef'd struct" do
+        code, = described_class.new(line_number_style: nil).fetch_first_definition("cutie_pie")
+        expect(decolor code).to include <<EOF
+typedef struct {
+  int lovely;
+  char horse;
+} cutie_pie;
+EOF
+      end
+
+      it "returns the code for a typedef'd enum" do
+        code, = described_class.new(line_number_style: nil).fetch_first_definition("baby_enum")
+        expect(decolor code).to include <<EOF
+typedef enum cute_enum_e {
+  lillybing,
+  tote,
+  lilt
+} baby_enum;
+EOF
+      end
+
     end
   end
 
