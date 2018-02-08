@@ -50,17 +50,14 @@ module Pry::CInternals
 
     def extract_function(info)
       source_file = source_from_file(info.file)
-      offset = 1
-      start_line = info.line
+      offset, start_line = 1, info.line
 
       if !complete_function_signature?(source_file[info.line]) && function_return_type?(source_file[info.line - 1])
         start_line = info.line - 1
         offset += 1
       end
 
-      if !source_file[info.line].strip.end_with?("{")
-        offset += 1
-      end
+      offset += 1 if !source_file[info.line].strip.end_with?("{")
 
       extract_code(info, offset: offset, start_line: start_line) do |code|
         return code if balanced?(code)
