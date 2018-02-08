@@ -90,11 +90,11 @@ module Pry::CInternals
 
     def balanced?(str)
       tokens = CodeRay.scan(str, :c).tokens.each_slice(2)
-      token_count(tokens, /{/) == token_count(tokens, /}/)
+      token_count(tokens, '{') == token_count(tokens, '}')
     end
 
     def token_count(tokens, token)
-      tokens.count { |v|  v.first =~ token && v.last == :operator }
+      tokens.count { |v|  v.first.include?(token) && v.last == :operator }
     end
 
     def source_from_file(file)
