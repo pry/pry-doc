@@ -98,13 +98,8 @@ module Pry::CInternals
     end
 
     def source_from_file(file)
-      file_cache = self.class.file_cache
-      if file_cache.key?(file)
-        file_cache[file]
-      else
-        # inject a "\n" as first element to align array index and line number
-        file_cache[file] = ["\n", *File.read(file).lines]
-      end
+      # inject a leading "\n" to align array index and line number
+      self.class.file_cache[file] ||= ["\n", *File.read(file).lines]
     end
 
     # normalized
