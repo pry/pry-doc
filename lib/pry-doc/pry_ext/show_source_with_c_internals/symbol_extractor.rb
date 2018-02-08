@@ -12,7 +12,7 @@ module Pry::CInternals
     def extract(info)
       if info.original_symbol.start_with?("#define")
         extract_macro(info)
-      elsif info.original_symbol =~ /\s*(struct|enum)\s*/
+      elsif info.original_symbol =~ /\s+(struct|enum)\s+/
         extract_struct(info)
       elsif info.original_symbol.start_with?("}")
         extract_typedef_struct(info)
@@ -38,7 +38,7 @@ module Pry::CInternals
     end
 
     def extract_typedef_struct(info)
-      extract_code(info) do |code, direction: :reverse|
+      extract_code(info, direction: :reverse) do |code|
         return code if balanced?(code)
       end
     end
