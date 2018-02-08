@@ -46,34 +46,6 @@ RSpec.describe PryDoc do
       end
     end
 
-    context "with line numbers" do
-      context "normal style (actual line numbers)" do
-        it "displays actual line numbers" do
-          code, = described_class.new(line_number_style: :'line-numbers').fetch_first_definition("bar")
-          expect(decolor code).to include <<EOF
-11: enum bar {
-12:   alpha,
-13:   beta,
-14:   gamma
-15: };
-EOF
-        end
-
-        context "base one style (line numbers start with 1)" do
-          it "displays actual line numbers" do
-            code, = described_class.new(line_number_style: :'base-one').fetch_first_definition("bar")
-            expect(decolor code).to include <<EOF
-1: enum bar {
-2:   alpha,
-3:   beta,
-4:   gamma
-5: };
-EOF
-          end
-        end
-      end
-    end
-
     describe "#fetch_all_definitions" do
       it "returns the code for all symbols" do
         code, = described_class.new(line_number_style: nil).fetch_all_definitions("foo")
@@ -93,6 +65,34 @@ EOF
     end
 
     describe "#fetch_first_definition" do
+      context "with line numbers" do
+        context "normal style (actual line numbers)" do
+          it "displays actual line numbers" do
+            code, = described_class.new(line_number_style: :'line-numbers').fetch_first_definition("bar")
+            expect(decolor code).to include <<EOF
+11: enum bar {
+12:   alpha,
+13:   beta,
+14:   gamma
+15: };
+EOF
+          end
+
+          context "base one style (line numbers start with 1)" do
+            it "displays actual line numbers" do
+              code, = described_class.new(line_number_style: :'base-one').fetch_first_definition("bar")
+              expect(decolor code).to include <<EOF
+1: enum bar {
+2:   alpha,
+3:   beta,
+4:   gamma
+5: };
+EOF
+            end
+          end
+        end
+      end
+
       it "returns the code for a function" do
         code, = described_class.new(line_number_style: nil).fetch_first_definition("foo")
         expect(decolor code).to include(<<EOF
