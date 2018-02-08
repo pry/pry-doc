@@ -29,3 +29,15 @@ typedef struct {
   int lovely;
   char horse;
 } cutie_pie;
+
+void tinkywinky(void) {
+}
+
+void lala(void)
+{
+}
+
+int*
+po(void)
+{
+}

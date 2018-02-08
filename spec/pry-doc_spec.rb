@@ -100,7 +100,7 @@ int
 foo(void) {
 }
 EOF
-        ).or include <<EOF
+                                       ).or include <<EOF
 char
 foo(int*) {
   return 'a';
@@ -162,6 +162,52 @@ typedef enum cute_enum_e {
 EOF
       end
 
+      context "function definitions" do
+        context "return type is on same line" do
+          subject do
+            decolor described_class.new(line_number_style: nil)
+                      .fetch_first_definition("tinkywinky")
+                      .first
+          end
+
+          it do is_expected.to include <<EOF
+void tinkywinky(void) {
+}
+EOF
+          end
+        end
+
+        context "curl brackets on subsequent line" do
+          subject do
+            decolor described_class.new(line_number_style: nil)
+                      .fetch_first_definition("lala")
+                      .first
+          end
+
+          it do is_expected.to include <<EOF
+void lala(void)
+{
+}
+EOF
+          end
+        end
+
+        context "return type on prior line and curly brackets on subsequent" do
+          subject do
+            decolor described_class.new(line_number_style: nil)
+                      .fetch_first_definition("po")
+                      .first
+          end
+
+          it do is_expected.to include <<EOF
+int*
+po(void)
+{
+}
+EOF
+          end
+        end
+      end
     end
   end
 
