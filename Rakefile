@@ -17,6 +17,11 @@ task :pry_fixture do
   sh %{pry -I./lib -r pry-doc -e "Pry::CInternals::CodeFetcher.ruby_source_folder = './spec/fixtures/c_source'"}
 end
 
+desc "start pry with pry-doc code loaded"
+task :pry do
+  sh "pry -I./lib -r pry-doc"
+end
+
 desc "generate fixture etags"
 task :etags do
   sh 'etags --no-members spec/fixtures/c_source/*.c -o spec/fixtures/c_source/tags'
