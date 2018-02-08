@@ -40,6 +40,9 @@ RSpec.describe PryDoc do
         expect(described_class.symbol_map).to have_key("wassup")
         expect(described_class.symbol_map).to have_key("bar")
         expect(described_class.symbol_map).to have_key("baz")
+        expect(described_class.symbol_map).to have_key("cute_enum_e")
+        expect(described_class.symbol_map).to have_key("baby_enum")
+        expect(described_class.symbol_map).to have_key("cutie_pie")
       end
     end
 
