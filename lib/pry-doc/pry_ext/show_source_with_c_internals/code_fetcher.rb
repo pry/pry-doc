@@ -99,7 +99,7 @@ module Pry::CInternals
     def self.ask_for_install
       puts "Method/class Not found - do you want to install MRI sources to attempt to resolve the lookup there? (This allows the lookup of C internals) Y/N"
 
-      if $stdin.gets.chomp !~ /^y/i
+      if $stdin.gets !~ /^y/i
         puts "MRI sources not installed. To prevent being asked again, add `Pry.config.skip_mri_source = true` to your ~/.pryrc"
         raise Pry::CommandError, "No definition found."
       end
