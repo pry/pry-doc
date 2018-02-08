@@ -60,11 +60,7 @@ module Pry::CInternals
     end
 
     def start_line_for(line)
-      if line_number_style == :'base-one'
-        1
-      else
-        line || 1
-      end
+      line_number_style == :'base-one' ? 1 : line || 1
     end
 
     def self.symbol_map
