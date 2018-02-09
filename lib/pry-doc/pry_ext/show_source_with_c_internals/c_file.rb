@@ -59,7 +59,7 @@ module Pry::CInternals
 
     def cleanup_symbol(symbol)
       symbol = symbol.split.last
-      symbol.chomp("(").chomp("*").chomp(";")
+      symbol.chomp("(").chomp("*").chomp(";").chomp(",")
     end
 
     def cleanup_linenumber(line_number)

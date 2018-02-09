@@ -88,7 +88,7 @@ module Pry::CInternals
     end
 
     def self.ask_for_install
-      puts "Method/class Not found - do you want to install MRI sources to attempt to resolve the lookup there?\n(This allows the lookup of C internals) Y/N"
+      puts "Method/class Not found - do you want to install MRI sources to attempt to resolve the identifier there?\n(This allows the lookup of C internals) Y/N"
 
       if $stdin.gets !~ /^y/i
         puts "MRI sources not installed. To prevent being asked again, add `Pry.config.skip_mri_source = true` to your ~/.pryrc"
@@ -98,7 +98,7 @@ module Pry::CInternals
 
     def self.install_and_setup_ruby_source
       ask_for_install
-      puts "Downloading and setting up Ruby #{ruby_version} source in attempt to resolve symbol..."
+      puts "Downloading and setting up Ruby #{ruby_version} source..."
       FileUtils.mkdir_p(ruby_source_folder)
       FileUtils.cd(File.dirname(ruby_source_folder)) do
         %x{ curl -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - > /dev/null 2>&1 }
