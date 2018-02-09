@@ -85,7 +85,7 @@ module Pry::CInternals
     end
 
     def function_return_type?(str)
-      str.strip =~ /[\w\*]$/
+      str.strip =~ /\w\s*\*?$/
     end
 
     def balanced?(str)

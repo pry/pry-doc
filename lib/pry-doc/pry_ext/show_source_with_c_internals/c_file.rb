@@ -26,6 +26,7 @@ module Pry::CInternals
     def process_symbols
       @symbols = @lines.each_with_object({}) do |v, h|
         symbol, line_number = v.split(SYMBOL_SEPARATOR)
+        next if symbol.strip =~ /^\w+$/ # these symbols are usually errors in etags
         h[cleanup_symbol(symbol)] = [source_location_for(symbol, line_number)]
       end
     end
@@ -33,7 +34,7 @@ module Pry::CInternals
     private
 
     def source_location_for(symbol, line_number)
-      SourceLocation.new(full_path_for(@file_name),
+      SourceLocation.new(File.join(ruby_source_folder, @file_name),
                          cleanup_linenumber(line_number), symbol_type_for(symbol.strip))
     end
 
@@ -51,10 +52,6 @@ module Pry::CInternals
       else
         :unknown
       end
-    end
-
-    def full_path_for(file)
-      File.join(ruby_source_folder, file)
     end
 
     def cleanup_symbol(symbol)
