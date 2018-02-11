@@ -13,7 +13,7 @@ module Pry::CInternals
       case info.symbol_type
       when :macro
         extract_macro(info)
-      when :struct
+      when :struct, :enum
         extract_struct(info)
       when :typedef_struct
         extract_typedef_struct(info)
@@ -61,7 +61,13 @@ module Pry::CInternals
         offset += 1
       end
 
-      offset += 1 if !source_file[info.line].strip.end_with?("{")
+      (0..4).each do |v|
+        line = source_file[info.line + v]
+        if line && line.strip.end_with?("{")
+          offset += v
+          break
+        end
+      end
 
       extract_code(info, offset: offset, start_line: start_line) do |code|
         return code if balanced?(code)

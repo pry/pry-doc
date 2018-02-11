@@ -5,9 +5,6 @@ module Pry::CInternals
     def options(opt)
       super(opt)
       opt.on :c, "c-source", "Show source of a C identifier in MRI (rather than Ruby method of same name)"
-
-      opt.on :A, "after", "Lines after"
-      opt.on :B, "before", "Lines before"
     end
 
     def show_c_source

@@ -41,8 +41,10 @@ module Pry::CInternals
     def symbol_type_for(symbol)
       if symbol.start_with?("#define")
         :macro
-      elsif symbol =~ /\b(struct|enum)\b/
+      elsif symbol =~ /\bstruct\b/
         :struct
+      elsif symbol =~ /\benum\b/
+        :enum
       elsif symbol.start_with?("}")
         :typedef_struct
       elsif symbol =~/^typedef.*;$/
@@ -56,7 +58,7 @@ module Pry::CInternals
 
     def cleanup_symbol(symbol)
       symbol = symbol.split.last
-      symbol.chomp("(").chomp("*").chomp(";").chomp(",")
+      symbol.gsub(/\W/, '')
     end
 
     def cleanup_linenumber(line_number)
