@@ -107,10 +107,5 @@ module Pry::CInternals
       # inject a leading "\n" to align array index and line number
       self.class.file_cache[file] ||= ["\n", *File.read(file).lines]
     end
-
-    # normalized
-    def ruby_version
-      RUBY_VERSION.tr(".", "_")
-    end
   end
 end

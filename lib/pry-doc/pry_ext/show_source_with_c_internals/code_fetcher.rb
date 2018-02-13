@@ -10,8 +10,15 @@ module Pry::CInternals
       attr_accessor :ruby_source_folder
     end
 
-    # normalized
-    def self.ruby_version() RUBY_VERSION.tr(".", "_") end
+    # The Ruby version that corresponds to a downloadable release
+    # Note that after Ruby 2.1.0 they exclude the patchlevel from tar files
+    def self.ruby_version
+      if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1.0")
+        RUBY_VERSION.tr(".", "_")
+      else
+        RUBY_VERSION.tr(".", "_") + "_#{RUBY_PATCHLEVEL}"
+      end
+    end
 
     self.ruby_source_folder = File.join(File.expand_path("~/.pry.d"), "ruby-#{ruby_version}")
 
@@ -83,8 +90,10 @@ module Pry::CInternals
       @tagfile ||= File.read(tags)
     end
 
-    def self.check_for_error(message)
-      raise Pry::CommandError, message if $?.to_i != 0
+    # @param [String] message Message to display on error
+    # @param [&Block] block Optional assertion
+    def self.check_for_error(message, &block)
+      raise Pry::CommandError, message if $?.to_i != 0 || block && !block.call
     end
 
     def self.ask_for_install
@@ -99,18 +108,29 @@ module Pry::CInternals
     def self.install_and_setup_ruby_source
       ask_for_install
       puts "Downloading and setting up Ruby #{ruby_version} source..."
+      download_ruby
+      generate_tagfile
+      puts "...Finished!"
+    end
+
+    def self.download_ruby
+      curl_cmd = "curl --show-error --fail-early --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - 2> /dev/null"
+
       FileUtils.mkdir_p(ruby_source_folder)
       FileUtils.cd(File.dirname(ruby_source_folder)) do
-        %x{ curl -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - > /dev/null 2>&1 }
-        check_for_error("curl")
+        %x{ #{curl_cmd} }
+        check_for_error(curl_cmd) { Dir.entries(ruby_source_folder).count > 5 }
       end
+    end
+
+    def self.generate_tagfile
+      find_cmd = "find . -type f -name '*.[chy]' | etags - --no-members -o tags"
 
       FileUtils.cd(ruby_source_folder) do
         puts "Generating tagfile!"
-        %x{ find . -type f -name "*.[chy]" | etags - --no-members -o tags }
-        check_for_error("find | etags")
+        %x{ #{find_cmd} }
+        check_for_error(find_cmd) { File.size(File.join(ruby_source_folder, "tags")) > 500 }
       end
-      puts "...Finished!"
     end
   end
 end
