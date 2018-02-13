@@ -11,7 +11,7 @@ module Pry::CInternals
     end
 
     # The Ruby version that corresponds to a downloadable release
-    # Note that after Ruby 2.1.0 they exclude the patchlevel from tar files
+    # Note that after Ruby 2.1.0 they exclude the patchlevel from the release name
     def self.ruby_version
       if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1.0")
         RUBY_VERSION.tr(".", "_")
