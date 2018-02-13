@@ -39,7 +39,7 @@ module Pry::CInternals
     end
 
     def symbol_type_for(symbol)
-      if symbol.start_with?("#define")
+      if symbol =~ /#\s*define/
         :macro
       elsif symbol =~ /\bstruct\b/
         :struct
