@@ -24,14 +24,14 @@ module Pry::CInternals
     end
 
     def process
-      if opts.present?(:c) && !Pry.config.skip_cruby_source
+      if opts.present?(:c) && !_pry_.config.skip_cruby_source
         show_c_source
         return
       else
         super
       end
     rescue Pry::CommandError
-      raise if Pry.config.skip_cruby_source
+      raise if _pry_.config.skip_cruby_source
       show_c_source
     end
 
