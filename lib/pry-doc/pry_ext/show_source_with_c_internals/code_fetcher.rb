@@ -114,7 +114,7 @@ module Pry::CInternals
     end
 
     def self.download_ruby
-      curl_cmd = "curl --show-error --fail-early --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - 2> /dev/null"
+      curl_cmd = "curl --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - 2> /dev/null"
 
       FileUtils.mkdir_p(ruby_source_folder)
       FileUtils.cd(File.dirname(ruby_source_folder)) do
