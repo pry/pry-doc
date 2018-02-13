@@ -49,12 +49,12 @@ RSpec.describe PryDoc do
     describe "#fetch_all_definitions" do
       it "returns both code and file name" do
         file_ = described_class.symbol_map["foo"].first.file
-        _, file = described_class.new(line_number_style: nil).fetch_all_definitions("foo")
+        _, file = described_class.new.fetch_all_definitions("foo")
         expect(file).to eq file_
       end
 
       it "returns the code for all symbols" do
-        code, = described_class.new(line_number_style: nil).fetch_all_definitions("foo")
+        code, = described_class.new.fetch_all_definitions("foo")
         expect(decolor code).to include <<EOF
 int
 foo(void) {
@@ -72,7 +72,7 @@ EOF
 
     describe "#fetch_first_definition" do
       it "returns both code and file name" do
-        code, file = described_class.new(line_number_style: nil).fetch_first_definition("wassup")
+        code, file = described_class.new.fetch_first_definition("wassup")
         expect(decolor code).to include "typedef int wassup;"
         expect(file).to eq File.join(__dir__, "fixtures/c_source/hello.c")
       end
@@ -106,7 +106,7 @@ EOF
       end
 
       it "returns the code for a function" do
-        code, = described_class.new(line_number_style: nil).fetch_first_definition("foo")
+        code, = described_class.new.fetch_first_definition("foo")
         expect(decolor code).to include(<<EOF
 int
 foo(void) {
@@ -121,7 +121,7 @@ EOF
       end
 
       it "returns the code for an enum" do
-        code, = described_class.new(line_number_style: nil).fetch_first_definition("bar")
+        code, = described_class.new.fetch_first_definition("bar")
         expect(decolor code).to include <<EOF
 enum bar {
   alpha,
@@ -132,19 +132,19 @@ EOF
       end
 
       it "returns the code for a macro" do
-        code, = described_class.new(line_number_style: nil).fetch_first_definition("baby")
+        code, = described_class.new.fetch_first_definition("baby")
         expect(decolor code).to include('#define baby do {')
         expect(decolor code).to include('printf("baby");')
         expect(decolor code).to include('while(0)')
       end
 
       it "returns the code for a typedef" do
-        code, = described_class.new(line_number_style: nil).fetch_first_definition("wassup")
+        code, = described_class.new.fetch_first_definition("wassup")
         expect(decolor code).to include('typedef int wassup;')
       end
 
       it "returns the code for a struct" do
-        code, = described_class.new(line_number_style: nil).fetch_first_definition("baz")
+        code, = described_class.new.fetch_first_definition("baz")
         expect(decolor code).to include <<EOF
 struct baz {
   int x;
@@ -154,7 +154,7 @@ EOF
       end
 
       it "returns the code for a typedef'd struct" do
-        code, = described_class.new(line_number_style: nil).fetch_first_definition("cutie_pie")
+        code, = described_class.new.fetch_first_definition("cutie_pie")
         expect(decolor code).to include <<EOF
 typedef struct {
   int lovely;
@@ -164,7 +164,7 @@ EOF
       end
 
       it "returns the code for a typedef'd enum" do
-        code, = described_class.new(line_number_style: nil).fetch_first_definition("baby_enum")
+        code, = described_class.new.fetch_first_definition("baby_enum")
         expect(decolor code).to include <<EOF
 typedef enum cute_enum_e {
   lillybing,
@@ -177,7 +177,7 @@ EOF
       context "function definitions" do
         context "return type is on same line" do
           subject do
-            decolor described_class.new(line_number_style: nil)
+            decolor described_class.new
                       .fetch_first_definition("tinkywinky")
                       .first
           end
@@ -191,7 +191,7 @@ EOF
 
         context "curly brackets on subsequent line" do
           subject do
-            decolor described_class.new(line_number_style: nil)
+            decolor described_class.new
                       .fetch_first_definition("lala")
                       .first
           end
@@ -206,7 +206,7 @@ EOF
 
         context "return type on prior line and curly brackets on subsequent" do
           subject do
-            decolor described_class.new(line_number_style: nil)
+            decolor described_class.new
                       .fetch_first_definition("po")
                       .first
           end
