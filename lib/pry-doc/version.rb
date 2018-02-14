@@ -1,3 +1,3 @@
 module PryDoc
-  VERSION = '0.13.0pre14'
+  VERSION = '0.13.0'
 end
