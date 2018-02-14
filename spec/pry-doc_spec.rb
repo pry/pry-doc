@@ -12,6 +12,216 @@ puts "Testing pry-doc version #{PryDoc::VERSION}..."
 puts "Ruby version: #{RUBY_VERSION}"
 
 RSpec.describe PryDoc do
+  describe Pry::CInternals::CodeFetcher do
+    def decolor(str)
+      Pry::Helpers::Text.strip_color(str)
+    end
+
+    before do
+      described_class.ruby_source_folder = File.join(File.dirname(__FILE__), "fixtures/c_source")
+    end
+
+    context "no tags file exists" do
+      it "attempts to install and setup ruby" do
+        described_class.ruby_source_folder = File.join(File.dirname(__FILE__), "fishface")
+        expect(described_class).to receive(:install_and_setup_ruby_source)
+
+        # will try to read from the 'created' tags file, this will error, so rescue
+        # (since we're stubbing out `install_and_setup_ruby_source` no tags file
+        # ever gets created)
+        described_class.tagfile rescue nil
+      end
+    end
+
+    describe ".symbol_map" do
+      it "generates the map with the correct symbols" do
+        expect(described_class.symbol_map).to have_key("foo")
+        expect(described_class.symbol_map).to have_key("baby")
+        expect(described_class.symbol_map).to have_key("wassup")
+        expect(described_class.symbol_map).to have_key("bar")
+        expect(described_class.symbol_map).to have_key("baz")
+        expect(described_class.symbol_map).to have_key("cute_enum_e")
+        expect(described_class.symbol_map).to have_key("baby_enum")
+        expect(described_class.symbol_map).to have_key("cutie_pie")
+      end
+    end
+
+    describe "#fetch_all_definitions" do
+      it "returns both code and file name" do
+        file_ = described_class.symbol_map["foo"].first.file
+        _, file = described_class.new.fetch_all_definitions("foo")
+        expect(file).to eq file_
+      end
+
+      it "returns the code for all symbols" do
+        code, = described_class.new.fetch_all_definitions("foo")
+        expect(decolor code).to include <<EOF
+int
+foo(void) {
+}
+EOF
+
+        expect(decolor code).to include <<EOF
+char
+foo(int*) {
+  return 'a';
+}
+EOF
+      end
+    end
+
+    describe "#fetch_first_definition" do
+      it "returns both code and file name" do
+        code, file = described_class.new.fetch_first_definition("wassup")
+        expect(decolor code).to include "typedef int wassup;"
+        expect(file).to eq File.join(__dir__, "fixtures/c_source/hello.c")
+      end
+
+      context "with line numbers" do
+        context "normal style (actual line numbers)" do
+          it "displays actual line numbers" do
+            code, = described_class.new(line_number_style: :'line-numbers').fetch_first_definition("bar")
+            expect(decolor code).to include <<EOF
+11: enum bar {
+12:   alpha,
+13:   beta,
+14:   gamma
+15: };
+EOF
+          end
+
+          context "base one style (line numbers start with 1)" do
+            it "displays actual line numbers" do
+              code, = described_class.new(line_number_style: :'base-one').fetch_first_definition("bar")
+              expect(decolor code).to include <<EOF
+1: enum bar {
+2:   alpha,
+3:   beta,
+4:   gamma
+5: };
+EOF
+            end
+          end
+        end
+      end
+
+      it "returns the code for a function" do
+        code, = described_class.new.fetch_first_definition("foo")
+        expect(decolor code).to include(<<EOF
+int
+foo(void) {
+}
+EOF
+                                       ).or include <<EOF
+char
+foo(int*) {
+  return 'a';
+}
+EOF
+      end
+
+      it "returns the code for an enum" do
+        code, = described_class.new.fetch_first_definition("bar")
+        expect(decolor code).to include <<EOF
+enum bar {
+  alpha,
+  beta,
+  gamma
+};
+EOF
+      end
+
+      it "returns the code for a macro" do
+        code, = described_class.new.fetch_first_definition("baby")
+        expect(decolor code).to include('#define baby do {')
+        expect(decolor code).to include('printf("baby");')
+        expect(decolor code).to include('while(0)')
+      end
+
+      it "returns the code for a typedef" do
+        code, = described_class.new.fetch_first_definition("wassup")
+        expect(decolor code).to include('typedef int wassup;')
+      end
+
+      it "returns the code for a struct" do
+        code, = described_class.new.fetch_first_definition("baz")
+        expect(decolor code).to include <<EOF
+struct baz {
+  int x;
+  int y;
+};
+EOF
+      end
+
+      it "returns the code for a typedef'd struct" do
+        code, = described_class.new.fetch_first_definition("cutie_pie")
+        expect(decolor code).to include <<EOF
+typedef struct {
+  int lovely;
+  char horse;
+} cutie_pie;
+EOF
+      end
+
+      it "returns the code for a typedef'd enum" do
+        code, = described_class.new.fetch_first_definition("baby_enum")
+        expect(decolor code).to include <<EOF
+typedef enum cute_enum_e {
+  lillybing,
+  tote,
+  lilt
+} baby_enum;
+EOF
+      end
+
+      context "function definitions" do
+        context "return type is on same line" do
+          subject do
+            decolor described_class.new
+                      .fetch_first_definition("tinkywinky")
+                      .first
+          end
+
+          it do is_expected.to include <<EOF
+void tinkywinky(void) {
+}
+EOF
+          end
+        end
+
+        context "curly brackets on subsequent line" do
+          subject do
+            decolor described_class.new
+                      .fetch_first_definition("lala")
+                      .first
+          end
+
+          it do is_expected.to include <<EOF
+void lala(void)
+{
+}
+EOF
+          end
+        end
+
+        context "return type on prior line and curly brackets on subsequent" do
+          subject do
+            decolor described_class.new
+                      .fetch_first_definition("po")
+                      .first
+          end
+
+          it do is_expected.to include <<EOF
+int*
+po(void)
+{
+}
+EOF
+          end
+        end
+      end
+    end
+  end
 
   describe "core C methods" do
     it 'should look up core (C) methods' do
@@ -193,5 +403,4 @@ RSpec.describe PryDoc do
       end
     end
   end
-
 end

@@ -15,6 +15,12 @@ module PryDoc
 
     YARD::Registry.load_yardoc(path)
   end
+
+  def self.root
+    @root ||= File.expand_path(File.dirname(__dir__))
+  end
+
+  root
 end
 
 PryDoc.load_yardoc(RUBY_VERSION[0...3].sub!('.', ''))

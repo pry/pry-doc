@@ -1,3 +1,5 @@
+require_relative "show_source_with_c_internals"
+
 class Pry
   module MethodInfo
     class << self
