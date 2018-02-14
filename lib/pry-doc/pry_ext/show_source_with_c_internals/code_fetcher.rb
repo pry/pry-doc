@@ -125,14 +125,11 @@ module Pry::CInternals
 
     def self.etag_binary
       @etag_binary ||= if RbConfig::CONFIG['host_os'] =~ /linux/
+                         arch = RbConfig::CONFIG['arch'] =~ /i(3|6)86/ ? 32 : 64
                          File.join(PryDoc.root, "libexec/linux/etags-#{arch}")
                        else
                          "etags"
                        end
-    end
-
-    def self.arch
-      RbConfig::CONFIG['arch'] =~ /i(3|6)86/ ? 32 : 64
     end
 
     def self.generate_tagfile
@@ -141,7 +138,7 @@ module Pry::CInternals
       FileUtils.cd(ruby_source_folder) do
         puts "Generating tagfile!"
         %x{ #{find_cmd} }
-        check_for_error(find_cmd) { File.size(File.join(ruby_source_folder, "tags")) > 500 }
+        check_for_error(find_cmd) { File.size(File.join(ruby_source_folder, "TAGS")) > 500 }
       end
     end
   end
