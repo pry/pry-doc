@@ -84,7 +84,7 @@ module Pry::CInternals
     end
 
     def self.tagfile
-      tags = File.join(ruby_source_folder, "tags")
+      tags = File.join(ruby_source_folder, "TAGS")
       install_and_setup_ruby_source unless File.exists?(tags)
 
       @tagfile ||= File.read(tags)
@@ -123,8 +123,20 @@ module Pry::CInternals
       end
     end
 
+    def self.etag_binary
+      @etag_binary ||= if RbConfig::CONFIG['host_os'] =~ /linux/
+                         File.join(PryDoc.root, "libexec/linux/etags-#{arch}")
+                       else
+                         "etags"
+                       end
+    end
+
+    def self.arch
+      RbConfig::CONFIG['arch'] =~ /i(3|6)86/ ? 32 : 64
+    end
+
     def self.generate_tagfile
-      find_cmd = "find . -type f -name '*.[chy]' | etags - --no-members -o tags"
+      find_cmd = "find . -type f -name '*.[chy]' | #{etag_binary} - --no-members"
 
       FileUtils.cd(ruby_source_folder) do
         puts "Generating tagfile!"
