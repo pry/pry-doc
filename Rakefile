@@ -25,7 +25,7 @@ end
 
 desc "generate fixture etags"
 task :etags do
-  sh 'etags --no-members spec/fixtures/c_source/*.c -o spec/fixtures/c_source/tags'
+  sh 'etags --no-members spec/fixtures/c_source/*.c -o spec/fixtures/c_source/TAGS'
 end
 desc "reinstall gem"
 task :reinstall => :gems do
