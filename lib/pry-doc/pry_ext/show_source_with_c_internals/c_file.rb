@@ -13,6 +13,7 @@ module Pry::CInternals
 
     # Used to separate symbol from line number
     SYMBOL_SEPARATOR = "\x7f"
+    ALTERNATIVE_SEPARATOR = "\x1"
 
     attr_accessor :symbols, :file_name
     attr_reader :ruby_source_folder
@@ -25,7 +26,8 @@ module Pry::CInternals
 
     def process_symbols
       @symbols = @lines.each_with_object({}) do |v, h|
-        symbol, line_number = v.split(SYMBOL_SEPARATOR)
+        sep = v.include?(ALTERNATIVE_SEPARATOR) ? ALTERNATIVE_SEPARATOR : SYMBOL_SEPARATOR
+        symbol, line_number = v.split(sep)
         next if symbol.strip =~ /^\w+$/ # these symbols are usually errors in etags
         h[cleanup_symbol(symbol)] = [source_location_for(symbol, line_number)]
       end
