@@ -36,8 +36,17 @@ module Pry::CInternals
     private
 
     def source_location_for(symbol, line_number)
-      SourceLocation.new(File.join(ruby_source_folder, @file_name),
+      SourceLocation.new(full_path_for(@file_name),
                          cleanup_linenumber(line_number), symbol_type_for(symbol.strip))
+    end
+
+    def full_path_for(file_name)
+      if RbConfig::CONFIG['host'] =~ /mswin|mingw/
+        # windows etags already has the path expanded, wtf
+        file_name
+      else
+        File.join(ruby_source_folder, @file_name)
+      end
     end
 
     def symbol_type_for(symbol)

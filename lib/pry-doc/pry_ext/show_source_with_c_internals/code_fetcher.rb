@@ -113,6 +113,12 @@ module Pry::CInternals
       puts "...Finished!"
     end
 
+    # for windows support need to:
+    # (1) curl -k --fail -L https://github.com/ruby/ruby/archive/v2_4_1.zip
+    # need -k as insecure as don't have root certs
+    # (2) 7z x v2_4_1.zip to extract it (via 7zip, choco install 7zip)
+    # (3) generate etags with: dir /b /s *.c *.h *.y | etags - --no-members
+    # (4) Done!
     def self.download_ruby
       curl_cmd = "curl --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - 2> /dev/null"
 
