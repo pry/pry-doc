@@ -24,7 +24,7 @@ RSpec.describe PryDoc do
     context "no tags file exists" do
       it "attempts to install and setup ruby" do
         described_class.ruby_source_folder = File.join(File.dirname(__FILE__), "fishface")
-        expect(described_class).to receive(:install_and_setup_ruby_source)
+        expect(described_class.ruby_source_installer).to receive(:install)
 
         # will try to read from the 'created' tags file, this will error, so rescue
         # (since we're stubbing out `install_and_setup_ruby_source` no tags file

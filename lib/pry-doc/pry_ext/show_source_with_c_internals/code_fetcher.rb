@@ -9,6 +9,7 @@ module Pry::CInternals
 
     class << self
       attr_accessor :ruby_source_folder
+      attr_accessor :ruby_source_installer
     end
 
     # The Ruby version that corresponds to a downloadable release
@@ -22,6 +23,7 @@ module Pry::CInternals
     end
 
     self.ruby_source_folder = File.join(File.expand_path("~/.pry.d"), "ruby-#{ruby_version}")
+    self.ruby_source_installer = RubySourceInstaller.new(ruby_version, ruby_source_folder)
 
     attr_reader :line_number_style
     attr_reader :symbol_extractor
@@ -87,15 +89,9 @@ module Pry::CInternals
     def self.tagfile
       tags = File.join(ruby_source_folder, "TAGS")
       if !File.exists?(tags)
-        RubySourceInstaller.new(ruby_version, ruby_source_folder).install
+        ruby_source_installer.install
       end
       @tagfile ||= File.read(tags)
-    end
-
-    # @param [String] message Message to display on error
-    # @param [&Block] block Optional assertion
-    def self.check_for_error(message, &block)
-      raise Pry::CommandError, message if $?.to_i != 0 || block && !block.call
     end
   end
 end
