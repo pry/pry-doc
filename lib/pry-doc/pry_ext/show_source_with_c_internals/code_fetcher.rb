@@ -74,10 +74,11 @@ module Pry::CInternals
     end
 
     def self.symbol_map
-      parse_tagfile
-      @symbol_map ||= @c_files.each_with_object({}) do |v, h|
-        h.merge!(v.symbols) { |k, old_val, new_val| old_val + new_val }
-      end
+      @symbol_map ||= (
+        parse_tagfile
+        @c_files.each_with_object({}) do |v, h|
+          h.merge!(v.symbols) { |k, old_val, new_val| old_val + new_val }
+        end)
     end
 
     def self.parse_tagfile
