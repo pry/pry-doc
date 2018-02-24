@@ -150,7 +150,7 @@ module Pry::CInternals
 
     def self.etag_cmd
       if Pry::Platform.windows?
-        "dir /b /s *.c *.h *.y | #{etag_binary} - --no-members"
+        %{dir /b /s *.c *.h *.y | "#{etag_binary}" - --no-members}
       else
         "find . -type f -name '*.[chy]' | #{etag_binary} - --no-members"
       end
