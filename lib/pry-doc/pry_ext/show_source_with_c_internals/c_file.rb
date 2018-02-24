@@ -41,7 +41,7 @@ module Pry::CInternals
     end
 
     def full_path_for(file_name)
-      if RbConfig::CONFIG['host'] =~ /mswin|mingw/
+      if Pry::Platform.windows?
         # windows etags already has the path expanded, wtf
         file_name
       else
