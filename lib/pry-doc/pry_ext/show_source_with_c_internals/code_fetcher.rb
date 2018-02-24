@@ -120,8 +120,6 @@ module Pry::CInternals
     # (3) generate etags with: dir /b /s *.c *.h *.y | etags - --no-members
     # (4) Done!
     def self.download_ruby
-      curl_cmd = "curl --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - 2> /dev/null"
-
       FileUtils.mkdir_p(ruby_source_folder)
       FileUtils.cd(File.dirname(ruby_source_folder)) do
         %x{ #{curl_cmd} }
@@ -129,22 +127,41 @@ module Pry::CInternals
       end
     end
 
+    def self.curl_cmd
+      if Pry::Platform.windows?
+        %{
+          curl -k --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.zip
+          7z -y x #{ruby_version}.zip
+        }
+      else
+        "curl --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - 2> /dev/null"
+      end
+    end
+
     def self.etag_binary
-      @etag_binary ||= if RbConfig::CONFIG['host_os'] =~ /linux/
+      @etag_binary ||= if Pry::Platform.linux?
                          arch = RbConfig::CONFIG['arch'] =~ /i(3|6)86/ ? 32 : 64
                          File.join(PryDoc.root, "libexec/linux/etags-#{arch}")
+                       elsif Pry::Platform.windows?
+                         File.join(PryDoc.root, "libexec/windows/etags")
                        else
                          "etags"
                        end
     end
 
-    def self.generate_tagfile
-      find_cmd = "find . -type f -name '*.[chy]' | #{etag_binary} - --no-members"
+    def self.etag_cmd
+      if Pry::Platform.windows?
+        "dir /b /s *.c *.h *.y | #{etag_binary} - --no-members"
+      else
+        "find . -type f -name '*.[chy]' | #{etag_binary} - --no-members"
+      end
+    end
 
+    def self.generate_tagfile
       FileUtils.cd(ruby_source_folder) do
         puts "Generating tagfile!"
-        %x{ #{find_cmd} }
-        check_for_error(find_cmd) { File.size(File.join(ruby_source_folder, "TAGS")) > 500 }
+        %x{ #{etag_cmd} }
+        check_for_error(etag_cmd) { File.size(File.join(ruby_source_folder, "TAGS")) > 500 }
       end
     end
   end
