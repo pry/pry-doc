@@ -3,9 +3,15 @@ module Pry::CInternals
     attr_reader :ruby_version
     attr_reader :ruby_source_folder
 
+    attr_accessor :curl_cmd
+    attr_accessor :etag_binary
+    attr_accessor :etag_cmd
+
     def initialize(ruby_version, ruby_source_folder)
       @ruby_version = ruby_version
       @ruby_source_folder = ruby_source_folder
+
+      set_platform_specific_commands
     end
 
     def install
@@ -16,8 +22,24 @@ module Pry::CInternals
       puts "...Finished!"
     end
 
+    private
+
+    def set_platform_specific_commands
+      if Pry::Platform.windows?
+        self.curl_cmd = "curl -k --fail -L -O https://github.com/ruby/ruby/archive/v#{ruby_version}.zip " +
+                        "& 7z -y x v#{ruby_version}.zip"
+        self.etag_binary = File.join(PryDoc.root, "libexec/windows/etags")
+        self.etag_cmd = %{dir /b /s *.c *.h *.y | "#{etag_binary}" - --no-members}
+      else
+        self.curl_cmd = "curl --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - 2> /dev/null"
+        self.etag_binary = Pry::Platform.linux? ? File.join(PryDoc.root, "libexec/linux/etags-#{arch}") : "etags"
+        self.etag_cmd = "find . -type f -name '*.[chy]' | #{etag_binary} - --no-members"
+      end
+    end
+
     def ask_for_install
-      print "Identifier not found - do you want to install CRuby sources to attempt to resolve the identifier there?\nThis allows the lookup of C internals Y/N "
+      print "Identifier not found - do you want to install CRuby sources to attempt to resolve the identifier there?" +
+            "\nThis allows the lookup of C internals Y/N "
 
       if $stdin.gets !~ /^y/i
         puts "CRuby sources not installed. To prevent being asked again, add `Pry.config.skip_cruby_source = true` to your ~/.pryrc"
@@ -39,33 +61,8 @@ module Pry::CInternals
       raise Pry::CommandError, message if $?.to_i != 0 || block && !block.call
     end
 
-    def curl_cmd
-      if Pry::Platform.windows?
-        %{
-          curl -k --fail -L -O https://github.com/ruby/ruby/archive/v#{ruby_version}.zip & 7z -y x v#{ruby_version}.zip
-        }
-      else
-        "curl --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - 2> /dev/null"
-      end
-    end
-
-    def etag_binary
-      @etag_binary ||= if Pry::Platform.linux?
-                         arch = RbConfig::CONFIG['arch'] =~ /i(3|6)86/ ? 32 : 64
-                         File.join(PryDoc.root, "libexec/linux/etags-#{arch}")
-                       elsif Pry::Platform.windows?
-                         File.join(PryDoc.root, "libexec/windows/etags")
-                       else
-                         "etags"
-                       end
-    end
-
-    def etag_cmd
-      if Pry::Platform.windows?
-        %{dir /b /s *.c *.h *.y | "#{etag_binary}" - --no-members}
-      else
-        "find . -type f -name '*.[chy]' | #{etag_binary} - --no-members"
-      end
+    def arch
+      RbConfig::CONFIG['arch'] =~ /i(3|6)86/ ? 32 : 64
     end
 
     def generate_tagfile
