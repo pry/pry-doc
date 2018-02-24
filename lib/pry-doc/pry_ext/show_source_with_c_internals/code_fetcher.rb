@@ -1,6 +1,7 @@
 require 'fileutils'
 require_relative 'c_file'
 require_relative 'symbol_extractor'
+require_relative 'ruby_source_installer'
 
 module Pry::CInternals
   class CodeFetcher
@@ -85,8 +86,9 @@ module Pry::CInternals
 
     def self.tagfile
       tags = File.join(ruby_source_folder, "TAGS")
-      install_and_setup_ruby_source unless File.exists?(tags)
-
+      if !File.exists?(tags)
+        RubySourceInstaller.new(ruby_version, ruby_source_folder).install
+      end
       @tagfile ||= File.read(tags)
     end
 
@@ -94,74 +96,6 @@ module Pry::CInternals
     # @param [&Block] block Optional assertion
     def self.check_for_error(message, &block)
       raise Pry::CommandError, message if $?.to_i != 0 || block && !block.call
-    end
-
-    def self.ask_for_install
-      print "Identifier not found - do you want to install CRuby sources to attempt to resolve the identifier there?\nThis allows the lookup of C internals Y/N "
-
-      if $stdin.gets !~ /^y/i
-        puts "CRuby sources not installed. To prevent being asked again, add `Pry.config.skip_cruby_source = true` to your ~/.pryrc"
-        raise Pry::CommandError, "No definition found."
-      end
-    end
-
-    def self.install_and_setup_ruby_source
-      ask_for_install
-      puts "Downloading and setting up Ruby #{ruby_version} source..."
-      download_ruby
-      generate_tagfile
-      puts "...Finished!"
-    end
-
-    # for windows support need to:
-    # (1) curl -k --fail -L https://github.com/ruby/ruby/archive/v2_4_1.zip
-    # need -k as insecure as don't have root certs
-    # (2) 7z x v2_4_1.zip to extract it (via 7zip, choco install 7zip)
-    # (3) generate etags with: dir /b /s *.c *.h *.y | etags - --no-members
-    # (4) Done!
-    def self.download_ruby
-      FileUtils.mkdir_p(ruby_source_folder)
-      FileUtils.cd(File.dirname(ruby_source_folder)) do
-        %x{ #{curl_cmd} }
-        check_for_error(curl_cmd) { Dir.entries(ruby_source_folder).count > 5 }
-      end
-    end
-
-    def self.curl_cmd
-      if Pry::Platform.windows?
-        %{
-          curl -k --fail -L -O https://github.com/ruby/ruby/archive/v#{ruby_version}.zip & 7z -y x v#{ruby_version}.zip
-        }
-      else
-        "curl --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - 2> /dev/null"
-      end
-    end
-
-    def self.etag_binary
-      @etag_binary ||= if Pry::Platform.linux?
-                         arch = RbConfig::CONFIG['arch'] =~ /i(3|6)86/ ? 32 : 64
-                         File.join(PryDoc.root, "libexec/linux/etags-#{arch}")
-                       elsif Pry::Platform.windows?
-                         File.join(PryDoc.root, "libexec/windows/etags")
-                       else
-                         "etags"
-                       end
-    end
-
-    def self.etag_cmd
-      if Pry::Platform.windows?
-        %{dir /b /s *.c *.h *.y | "#{etag_binary}" - --no-members}
-      else
-        "find . -type f -name '*.[chy]' | #{etag_binary} - --no-members"
-      end
-    end
-
-    def self.generate_tagfile
-      FileUtils.cd(ruby_source_folder) do
-        puts "Generating tagfile!"
-        %x{ #{etag_cmd} }
-        check_for_error(etag_cmd) { File.size(File.join(ruby_source_folder, "TAGS")) > 500 }
-      end
     end
   end
 end
