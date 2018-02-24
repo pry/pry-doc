@@ -130,8 +130,8 @@ module Pry::CInternals
     def self.curl_cmd
       if Pry::Platform.windows?
         %{
-          curl -k --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.zip
-          7z -y x #{ruby_version}.zip
+          curl -k --fail -L -O https://github.com/ruby/ruby/archive/v#{ruby_version}.zip
+          7z -y x v#{ruby_version}.zip
         }
       else
         "curl --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - 2> /dev/null"
