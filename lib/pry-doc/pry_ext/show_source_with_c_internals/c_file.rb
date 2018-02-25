@@ -8,72 +8,72 @@
 # First line is the name of the file
 # Following lines are the symbols followed by line number with char 127 as separator.
 module Pry::CInternals
-  class CFile
-    SourceLocation = Struct.new(:file, :line, :symbol_type)
+  class ETagParser
+    class CFile
+      # Used to separate symbol from line number
+      SYMBOL_SEPARATOR = "\x7f"
+      ALTERNATIVE_SEPARATOR = "\x1"
 
-    # Used to separate symbol from line number
-    SYMBOL_SEPARATOR = "\x7f"
-    ALTERNATIVE_SEPARATOR = "\x1"
+      attr_accessor :symbols, :file_name
+      attr_reader :ruby_source_folder
 
-    attr_accessor :symbols, :file_name
-    attr_reader :ruby_source_folder
-
-    def initialize(file_name: file_name, content: content, ruby_source_folder: nil)
-      @ruby_source_folder = ruby_source_folder
-      @content = content
-      @file_name = file_name
-    end
-
-    def process_symbols
-      @symbols = @content.each_with_object({}) do |v, h|
-        sep = v.include?(ALTERNATIVE_SEPARATOR) ? ALTERNATIVE_SEPARATOR : SYMBOL_SEPARATOR
-        symbol, line_number = v.split(sep)
-        next if symbol.strip =~ /^\w+$/ # these symbols are usually errors in etags
-        h[cleanup_symbol(symbol)] = [source_location_for(symbol, line_number)]
+      def initialize(file_name: file_name, content: content, ruby_source_folder: nil)
+        @ruby_source_folder = ruby_source_folder
+        @content = content
+        @file_name = file_name
       end
-    end
 
-    private
-
-    def source_location_for(symbol, line_number)
-      SourceLocation.new(full_path_for(@file_name),
-                         cleanup_linenumber(line_number), symbol_type_for(symbol.strip))
-    end
-
-    def full_path_for(file_name)
-      if Pry::Platform.windows?
-        # windows etags already has the path expanded, wtf
-        file_name
-      else
-        File.join(ruby_source_folder, @file_name)
+      def process_symbols
+        @symbols = @content.each_with_object({}) do |v, h|
+          sep = v.include?(ALTERNATIVE_SEPARATOR) ? ALTERNATIVE_SEPARATOR : SYMBOL_SEPARATOR
+          symbol, line_number = v.split(sep)
+          next if symbol.strip =~ /^\w+$/ # these symbols are usually errors in etags
+          h[cleanup_symbol(symbol)] = [source_location_for(symbol, line_number)]
+        end
       end
-    end
 
-    def symbol_type_for(symbol)
-      if symbol =~ /#\s*define/
-        :macro
-      elsif symbol =~ /\bstruct\b/
-        :struct
-      elsif symbol =~ /\benum\b/
-        :enum
-      elsif symbol.start_with?("}")
-        :typedef_struct
-      elsif symbol =~/^typedef.*;$/
-        :typedef_oneliner
-      elsif symbol =~ /\($/
-        :function
-      else
-        :unknown
+      private
+
+      def source_location_for(symbol, line_number)
+        SourceLocation.new(full_path_for(@file_name),
+                           cleanup_linenumber(line_number), symbol_type_for(symbol.strip))
       end
-    end
 
-    def cleanup_symbol(symbol)
-      symbol = symbol.split.last
-      symbol.gsub(/\W/, '')
-    end
+      def full_path_for(file_name)
+        if Pry::Platform.windows?
+          # windows etags already has the path expanded, wtf
+          file_name
+        else
+          File.join(ruby_source_folder, @file_name)
+        end
+      end
 
-    def cleanup_linenumber(line_number)
-      line_number.split.first.to_i
+      def symbol_type_for(symbol)
+        if symbol =~ /#\s*define/
+          :macro
+        elsif symbol =~ /\bstruct\b/
+          :struct
+        elsif symbol =~ /\benum\b/
+          :enum
+        elsif symbol.start_with?("}")
+          :typedef_struct
+        elsif symbol =~/^typedef.*;$/
+          :typedef_oneliner
+        elsif symbol =~ /\($/
+          :function
+        else
+          :unknown
+        end
+      end
+
+      def cleanup_symbol(symbol)
+        symbol = symbol.split.last
+        symbol.gsub(/\W/, '')
+      end
+
+      def cleanup_linenumber(line_number)
+        line_number.split.first.to_i
+      end
     end
   end
 end

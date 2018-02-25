@@ -1,6 +1,6 @@
 require 'fileutils'
 require_relative 'symbol_extractor'
-require_relative 'symbol_map_builder'
+require_relative 'etag_parser'
 require_relative 'ruby_source_installer'
 
 module Pry::CInternals
@@ -74,12 +74,16 @@ module Pry::CInternals
       line_number_style == :'base-one' ? 1 : line || 1
     end
 
+    # returns a hash that maps C symbols to an array of SourceLocations
+    # e.g: symbol_map["VALUE"] #=> [SourceLocation_1, SourceLocation_2]
+    # A SourceLocation is defined like this: Struct.new(:file, :line, :symbol_type)
+    # e.g file: "foo.c", line: 20, symbol_type: "function"
     def self.symbol_map
       return @symbol_map if @symbol_map
 
       tags_path = File.join(ruby_source_folder, "TAGS")
       ruby_source_installer.install unless File.exists?(tags_path)
-      @symbol_map = SymbolMapBuilder.new(tags_path, ruby_source_folder).symbol_map
+      @symbol_map = ETagParser.symbol_map_for(tags_path, ruby_source_folder)
     end
   end
 end

@@ -1,9 +1,16 @@
 require_relative 'c_file'
 
 module Pry::CInternals
-  class SymbolMapBuilder
+  class ETagParser
+    SourceLocation = Struct.new(:file, :line, :symbol_type)
+
     attr_reader :tags_path
     attr_reader :ruby_source_folder
+
+
+    def self.symbol_map_for(tags_path, ruby_source_folder)
+      new(tags_path, ruby_source_folder).symbol_map
+    end
 
     def initialize(tags_path, ruby_source_folder)
       @tags_path = tags_path
@@ -11,8 +18,8 @@ module Pry::CInternals
     end
 
     def symbol_map
-      parse_tagfile.each_with_object({}) do |v, h|
-        h.merge!(v.symbols) { |k, old_val, new_val| old_val + new_val }
+      parse_tagfile.each_with_object({}) do |c_file, hash|
+        hash.merge!(c_file.symbols) { |key, old_val, new_val| old_val + new_val }
       end
     end
 
