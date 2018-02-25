@@ -18,6 +18,11 @@ module Pry::CInternals
 
     def symbol_map
       parse_tagfile.each_with_object({}) do |c_file, hash|
+        # Append all the SourceLocations for a given symbol to the same array
+        # e.g
+        # { "foo" => [SourceLocation_1] }
+        # { "foo" => [SourceLocation_2] }
+        # => { "foo" => [SourceLocation_1, SourceLocation_2] }
         hash.merge!(c_file.symbols) { |key, old_val, new_val| old_val + new_val }
       end
     end
@@ -28,7 +33,9 @@ module Pry::CInternals
     # The first line is the name of the C file, e.g foo.c
     # The successive lines contain information about the symbols for that file.
     def parse_tagfile
-      tagfile.split("\f\n")[1..-1].map do |c_file_section|
+      tagfile_sections = tagfile.split("\f\n")
+      tagfile_sections.shift # first section is blank
+      tagfile_sections.map do |c_file_section|
         file_name, content = file_name_and_content_for(c_file_section)
         CFile.new(file_name: file_name, content: content, ruby_source_folder: ruby_source_folder)
           .tap(&:process_symbols)

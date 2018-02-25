@@ -74,7 +74,7 @@ module Pry::CInternals
       line_number_style == :'base-one' ? 1 : line || 1
     end
 
-    # returns a hash that maps C symbols to an array of SourceLocations
+    # Returns a hash that maps C symbols to an array of SourceLocations
     # e.g: symbol_map["VALUE"] #=> [SourceLocation_1, SourceLocation_2]
     # A SourceLocation is defined like this: Struct.new(:file, :line, :symbol_type)
     # e.g file: "foo.c", line: 20, symbol_type: "function"
