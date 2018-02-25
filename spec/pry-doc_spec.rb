@@ -18,6 +18,7 @@ RSpec.describe PryDoc do
     end
 
     before do
+      described_class.symbol_map = nil
       described_class.ruby_source_folder = File.join(File.dirname(__FILE__), "fixtures/c_source")
     end
 
@@ -29,7 +30,7 @@ RSpec.describe PryDoc do
         # will try to read from the 'created' tags file, this will error, so rescue
         # (since we're stubbing out `install_and_setup_ruby_source` no tags file
         # ever gets created)
-        described_class.tagfile rescue nil
+        described_class.symbol_map rescue nil
       end
     end
 

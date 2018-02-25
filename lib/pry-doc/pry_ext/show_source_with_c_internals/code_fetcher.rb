@@ -1,6 +1,6 @@
 require 'fileutils'
-require_relative 'c_file'
 require_relative 'symbol_extractor'
+require_relative 'symbol_map_builder'
 require_relative 'ruby_source_installer'
 
 module Pry::CInternals
@@ -10,6 +10,7 @@ module Pry::CInternals
     class << self
       attr_accessor :ruby_source_folder
       attr_accessor :ruby_source_installer
+      attr_accessor :symbol_map
     end
 
     # The Ruby version that corresponds to a downloadable release
@@ -74,25 +75,11 @@ module Pry::CInternals
     end
 
     def self.symbol_map
-      @symbol_map ||= (
-        parse_tagfile
-        @c_files.each_with_object({}) do |v, h|
-          h.merge!(v.symbols) { |k, old_val, new_val| old_val + new_val }
-        end)
-    end
+      return @symbol_map if @symbol_map
 
-    def self.parse_tagfile
-      @c_files ||= tagfile.split("\f\n")[1..-1].map do |v|
-        CFile.new(v, ruby_source_folder: ruby_source_folder).tap(&:process_symbols)
-      end
-    end
-
-    def self.tagfile
-      return @tagfile if @tagfile
-
-      tags = File.join(ruby_source_folder, "TAGS")
-      ruby_source_installer.install unless File.exists?(tags)
-      @tagfile = File.read(tags)
+      tags_path = File.join(ruby_source_folder, "TAGS")
+      ruby_source_installer.install unless File.exists?(tags_path)
+      @symbol_map = SymbolMapBuilder.new(tags_path, ruby_source_folder).symbol_map
     end
   end
 end
