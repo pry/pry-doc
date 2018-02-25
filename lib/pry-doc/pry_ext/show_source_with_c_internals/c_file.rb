@@ -14,7 +14,7 @@ module Pry::CInternals
       SYMBOL_SEPARATOR = "\x7f"
       ALTERNATIVE_SEPARATOR = "\x1"
 
-      attr_accessor :symbols, :file_name
+      attr_accessor :file_name
       attr_reader :ruby_source_folder
 
       def initialize(file_name: file_name, content: content, ruby_source_folder: nil)
@@ -23,8 +23,12 @@ module Pry::CInternals
         @file_name = file_name
       end
 
-      def process_symbols
-        @symbols = @content.each_with_object({}) do |v, h|
+      # Convert a C file to a map of symbols => SourceLocation that are found in that file
+      # e.g
+      # { "foo" => [SourceLocation], "bar"  => [SourceLocation] }
+      def symbol_map
+        return @symbol_map if @symbol_map
+        @symbol_map = @content.each_with_object({}) do |v, h|
           sep = v.include?(ALTERNATIVE_SEPARATOR) ? ALTERNATIVE_SEPARATOR : SYMBOL_SEPARATOR
           symbol, line_number = v.split(sep)
           next if symbol.strip =~ /^\w+$/ # these symbols are usually errors in etags
