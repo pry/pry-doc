@@ -88,11 +88,11 @@ module Pry::CInternals
     end
 
     def self.tagfile
+      return @tagfile if @tagfile
+
       tags = File.join(ruby_source_folder, "TAGS")
-      if !File.exists?(tags)
-        ruby_source_installer.install
-      end
-      @tagfile ||= File.read(tags)
+      ruby_source_installer.install unless File.exists?(tags)
+      @tagfile = File.read(tags)
     end
   end
 end
