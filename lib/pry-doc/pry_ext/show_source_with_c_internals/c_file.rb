@@ -18,14 +18,14 @@ module Pry::CInternals
     attr_accessor :symbols, :file_name
     attr_reader :ruby_source_folder
 
-    def initialize(str, ruby_source_folder: nil)
+    def initialize(file_name: file_name, content: content, ruby_source_folder: nil)
       @ruby_source_folder = ruby_source_folder
-      @lines = str.lines
-      @file_name = @lines.shift.split(",").first
+      @content = content
+      @file_name = file_name
     end
 
     def process_symbols
-      @symbols = @lines.each_with_object({}) do |v, h|
+      @symbols = @content.each_with_object({}) do |v, h|
         sep = v.include?(ALTERNATIVE_SEPARATOR) ? ALTERNATIVE_SEPARATOR : SYMBOL_SEPARATOR
         symbol, line_number = v.split(sep)
         next if symbol.strip =~ /^\w+$/ # these symbols are usually errors in etags
