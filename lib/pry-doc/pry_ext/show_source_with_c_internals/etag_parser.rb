@@ -7,7 +7,6 @@ module Pry::CInternals
     attr_reader :tags_path
     attr_reader :ruby_source_folder
 
-
     def self.symbol_map_for(tags_path, ruby_source_folder)
       new(tags_path, ruby_source_folder).symbol_map
     end
