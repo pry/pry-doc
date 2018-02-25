@@ -16,6 +16,8 @@ module Pry::CInternals
       end
     end
 
+    private
+
     def parse_tagfile
       tagfile.split("\f\n")[1..-1].map do |v|
         CFile.new(v, ruby_source_folder: ruby_source_folder).tap(&:process_symbols)
