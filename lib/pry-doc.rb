@@ -1,8 +1,3 @@
-require 'yard'
-
-require 'pry-doc/version'
-require 'pry-doc/pry_ext/method_info'
-
 module PryDoc
   def self.load_yardoc(version)
     path = "#{File.dirname(__FILE__)}/pry-doc/docs/#{version}"
@@ -22,5 +17,9 @@ module PryDoc
 
   root
 end
+
+require 'yard'
+require 'pry-doc/version'
+require 'pry-doc/pry_ext/method_info'
 
 PryDoc.load_yardoc(RUBY_VERSION[0...3].sub!('.', ''))
