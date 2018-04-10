@@ -19,6 +19,7 @@ module PryDoc
 end
 
 require 'yard'
+require 'pry'
 require 'pry-doc/version'
 require 'pry-doc/pry_ext/method_info'
 
