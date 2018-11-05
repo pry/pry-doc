@@ -17,7 +17,7 @@ module Pry::CInternals
       attr_accessor :file_name
       attr_reader :ruby_source_folder
 
-      def initialize(file_name:, content:, ruby_source_folder: nil)
+      def initialize(file_name: nil, content: nil, ruby_source_folder: nil)
         @ruby_source_folder = ruby_source_folder
         @content = content
         @file_name = file_name
