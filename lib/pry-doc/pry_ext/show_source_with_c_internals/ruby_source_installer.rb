@@ -25,15 +25,31 @@ module Pry::CInternals
     private
 
     def set_platform_specific_commands
-      if Pry::Platform.windows?
+      if windows?
         self.curl_cmd = "curl -k --fail -L -O https://github.com/ruby/ruby/archive/v#{ruby_version}.zip " +
                         "& 7z -y x v#{ruby_version}.zip"
         self.etag_binary = File.join(PryDoc.root, "libexec/windows/etags")
         self.etag_cmd = %{dir /b /s *.c *.h *.y | "#{etag_binary}" - --no-members}
       else
         self.curl_cmd = "curl --fail -L https://github.com/ruby/ruby/archive/v#{ruby_version}.tar.gz | tar xzvf - 2> /dev/null"
-        self.etag_binary = Pry::Platform.linux? ? File.join(PryDoc.root, "libexec/linux/etags-#{arch}") : "etags"
+        self.etag_binary = linux? ? File.join(PryDoc.root, "libexec/linux/etags-#{arch}") : "etags"
         self.etag_cmd = "find . -type f -name '*.[chy]' | #{etag_binary} - --no-members"
+      end
+    end
+
+    def windows?
+      if Gem::Version.new(Pry::VERSION) < Gem::Version.new("0.12.0")
+        Pry::Platform.windows?
+      else
+        Pry::Helpers::Platform.windows?
+      end
+    end
+
+    def linux?
+      if Gem::Version.new(Pry::VERSION) < Gem::Version.new("0.12.0")
+        Pry::Platform.linux?
+      else
+        Pry::Helpers::Platform.linux?
       end
     end
 

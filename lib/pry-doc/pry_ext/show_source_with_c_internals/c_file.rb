@@ -44,11 +44,19 @@ module Pry::CInternals
       end
 
       def full_path_for(file_name)
-        if Pry::Platform.windows?
+        if windows?
           # windows etags already has the path expanded, wtf
           file_name
         else
           File.join(ruby_source_folder, @file_name)
+        end
+      end
+
+      def windows?
+        if Gem::Version.new(Pry::VERSION) < Gem::Version.new("0.12.0")
+          Pry::Platform.windows?
+        else
+          Pry::Helpers::Platform.windows?
         end
       end
 
