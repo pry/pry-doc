@@ -38,7 +38,7 @@ module Pry::CInternals
     end
 
     def windows?
-      if Gem::Version.create(Pry::VERSION) < Gem::Version.create("0.12.0")
+      if Gem::Version.new(Pry::VERSION) < Gem::Version.new("0.12.0")
         Pry::Platform.windows?
       else
         Pry::Helpers::Platform.windows?
@@ -46,7 +46,7 @@ module Pry::CInternals
     end
 
     def linux?
-      if Gem::Version.create(Pry::VERSION) < Gem::Version.create("0.12.0")
+      if Gem::Version.new(Pry::VERSION) < Gem::Version.new("0.12.0")
         Pry::Platform.linux?
       else
         Pry::Helpers::Platform.linux?
