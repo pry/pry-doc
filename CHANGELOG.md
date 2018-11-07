@@ -3,6 +3,12 @@ Pry Doc changelog
 
 ### master
 
+### [v0.13.5][v0.13.5] (November 8, 2018)
+
+* Fixed deprecation warnings emitted by Pry v0.12.0
+  ([#87](https://github.com/pry/pry-doc/pull/87))
+* Fixed MRI 2.0 regression ([#88](https://github.com/pry/pry-doc/pull/88))
+
 ### [v0.12.0][v0.12.0] (January 21, 2018)
 
 * Added suport for Ruby 2.5 docs ([#75](https://github.com/pry/pry-doc/pull/75))
@@ -87,3 +93,4 @@ Pry Doc changelog
 [v0.11.0]: https://github.com/pry/pry-doc/releases/tag/v0.11.0
 [v0.11.1]: https://github.com/pry/pry-doc/releases/tag/v0.11.1
 [v0.12.0]: https://github.com/pry/pry-doc/releases/tag/v0.12.0
+[v0.13.5]: https://github.com/pry/pry-doc/releases/tag/v0.13.5
