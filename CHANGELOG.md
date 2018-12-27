@@ -3,6 +3,10 @@ Pry Doc changelog
 
 ### master
 
+### [v1.0.0][v1.0.0] (December 27, 2018)
+
+* Added suport for Ruby 2.6 docs ([#90](https://github.com/pry/pry-doc/pull/90))
+
 ### [v0.13.5][v0.13.5] (November 8, 2018)
 
 * Fixed deprecation warnings emitted by Pry v0.12.0
@@ -94,3 +98,4 @@ Pry Doc changelog
 [v0.11.1]: https://github.com/pry/pry-doc/releases/tag/v0.11.1
 [v0.12.0]: https://github.com/pry/pry-doc/releases/tag/v0.12.0
 [v0.13.5]: https://github.com/pry/pry-doc/releases/tag/v0.13.5
+[v1.0.0]: https://github.com/pry/pry-doc/releases/tag/v1.0.0

@@ -1,3 +1,3 @@
 module PryDoc
-  VERSION = '0.13.5'.freeze
+  VERSION = '1.0.0'.freeze
 end
