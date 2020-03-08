@@ -26,5 +26,5 @@ DESCR
   s.add_dependency 'pry', "~> 0.11"
   s.add_development_dependency 'latest_ruby', '~> 2.0'
   s.add_development_dependency 'rspec', '~> 3.5'
-  s.add_development_dependency 'rake', "~> 10.0"
+  s.add_development_dependency 'rake'
 end
