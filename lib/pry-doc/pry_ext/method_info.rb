@@ -115,7 +115,7 @@ class Pry
           host_source_location, _ =  WrappedModule.new(host).source_location
           break if host_source_location != nil
           return unless host.name
-          host = eval(host.namespace_name)
+          host = eval(namespace_name(host))
         end while host
 
         # We want to exclude all source_locations that aren't gems (i.e
@@ -185,6 +185,12 @@ class Pry
         log.enter_level(Logger::FATAL) do
           YARD.parse(file)
         end
+      end
+
+      private
+
+      def namespace_name(host)
+        host.name.split("::")[0..-2].join("::")
       end
     end
   end
