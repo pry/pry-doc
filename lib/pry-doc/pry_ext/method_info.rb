@@ -2,6 +2,40 @@ require_relative "show_source_with_c_internals"
 
 class Pry
   module MethodInfo
+    # @return [Regexp] a pattern that matches `method_instance.inspect`
+    METHOD_INSPECT_PATTERN =
+      # Ruby 2.7 changed how #inspect for methods looks like. It attaches param
+      # list and source location now. We use 2 Regexps: one is for 2.7+ and the
+      # other one is for older Rubies. This way we can modify both of them
+      # without the risk of breaking.
+      #
+      # See: https://bugs.ruby-lang.org/issues/14145
+      if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0")
+        %r{\A
+          \#<
+            (?:Unbound)?Method:\s
+            (.+) # Method owner such as "BigDecimal"
+            ([\#\.].+?) # Method signature such as ".finite?" or "#finite?"
+            \(.*\) # Param list
+            (?:
+              \s/.+\.rb:\d+ # Source location
+            )?
+            .* # Sometimes there's gibberish like "<main>:0", we ignore that
+          >
+        \z}x
+      else
+        %r{\A
+          \#<
+            (?:Unbound)?Method:\s
+            (.+) # Method owner such as "BigDecimal"
+            ([\#\.].+?) # Method signature such as ".finite?" or "#finite?"
+            (?:
+              \(.*\) # Param list
+            )?
+          >
+        \z}x
+      end
+
     class << self
       ##
       # Retrieve the YARD object that contains the method data.
@@ -52,7 +86,7 @@ class Pry
       #   to figure out a better way to distinguish between class methods and
       #   instance methods.
       def receiver_notation_for(meth)
-        match = meth.inspect.match(/\A#<(?:Unbound)?Method: (.+)([#\.].+?)(?:\(.+\))?>\z/)
+        match = meth.inspect.match(METHOD_INSPECT_PATTERN)
         owner = meth.owner.to_s.sub(/#<.+?:(.+?)>/, '\1')
         name = match[2]
         name.sub!('#', '.') if match[1] =~ /\A#<Class:/
