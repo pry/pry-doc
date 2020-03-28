@@ -3,8 +3,11 @@ Pry Doc changelog
 
 ### master
 
+* Added Ruby 2.7 support ([#94](https://github.com/pry/pry-doc/pull/94))
 * Improved Ruby 2.7 suport for certain methods
   ([#100](https://github.com/pry/pry-doc/pull/100))
+* Fixed ``NoMethodError: undefined method `namespace_name'``
+  ([#97](https://github.com/pry/pry-doc/pull/97))
 
 ### [v1.0.0][v1.0.0] (December 27, 2018)
 
@@ -102,3 +105,4 @@ Pry Doc changelog
 [v0.12.0]: https://github.com/pry/pry-doc/releases/tag/v0.12.0
 [v0.13.5]: https://github.com/pry/pry-doc/releases/tag/v0.13.5
 [v1.0.0]: https://github.com/pry/pry-doc/releases/tag/v1.0.0
+[v1.1.0]: https://github.com/pry/pry-doc/releases/tag/v1.1.0
