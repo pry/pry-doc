@@ -3,6 +3,9 @@ Pry Doc changelog
 
 ### master
 
+* Improved Ruby 2.7 suport for certain methods
+  ([#100](https://github.com/pry/pry-doc/pull/100))
+
 ### [v1.0.0][v1.0.0] (December 27, 2018)
 
 * Added suport for Ruby 2.6 docs ([#90](https://github.com/pry/pry-doc/pull/90))
