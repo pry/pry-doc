@@ -1,8 +1,9 @@
 ![Pry Doc][logo]
 
+[![Circle Build Status](https://circleci.com/gh/pry/pry-doc.svg?style=shield)](https://circleci.com/gh/pry/pry-doc)
+
 * Repository: [https://github.com/pry/pry-doc][repo]
 * Wiki: [https://github.com/pry/pry-doc/wiki][wiki]
-* [![Build Status](https://travis-ci.org/pry/pry-doc.svg?branch=master)](https://travis-ci.org/pry/pry-doc)
 
 Description
 -----------
