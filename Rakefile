@@ -85,7 +85,7 @@ def generate_yard
 end
 
 def replace_existing_docs(ver)
-  system %|mkdir -p ../../../lib/pry-doc/docs/#{ver} && cp -r .yardoc/* "$_"|
+  system %|mkdir -p ../../../lib/pry-doc/docs/#{ver} && cp -r .yardoc/* ../../../lib/pry-doc/docs/#{ver}|
   Dir.chdir(File.expand_path(File.dirname(__FILE__)))
 end
 
@@ -140,4 +140,9 @@ end
 desc "Generate the latest Ruby 2.7 docs"
 task "gen27" do
   generate_docs_for('27', Latest.ruby27)
+end
+
+desc "Generate the latest Ruby 3.0 docs"
+task "gen30" do
+  generate_docs_for('30', Latest.ruby30)
 end
