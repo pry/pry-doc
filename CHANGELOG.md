@@ -3,6 +3,9 @@ Pry Doc changelog
 
 ### master
 
+* Fixed the `_pry_ is deprecated, use pry_instance instead` deprecation warning
+  ([#111](https://github.com/pry/pry-doc/pull/111))
+
 ### [v1.1.0][v1.1.0] (March 28, 2020)
 
 * Added Ruby 2.7 support ([#94](https://github.com/pry/pry-doc/pull/94))

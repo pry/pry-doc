@@ -17,21 +17,21 @@ module Pry::CInternals
       end
       if result
         set_file_and_dir_locals(file)
-        _pry_.pager.page result
+        pry_instance.pager.page result
       else
         raise Pry::CommandError, no_definition_message
       end
     end
 
     def process
-      if opts.present?(:c) && !_pry_.config.skip_cruby_source
+      if opts.present?(:c) && !pry_instance.config.skip_cruby_source
         show_c_source
         return
       else
         super
       end
     rescue Pry::CommandError
-      raise if _pry_.config.skip_cruby_source
+      raise if pry_instance.config.skip_cruby_source
       show_c_source
     end
 
