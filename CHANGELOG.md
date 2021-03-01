@@ -3,6 +3,9 @@ Pry Doc changelog
 
 ### master
 
+### [v1.2.0][v1.2.0] (March 2, 2021)
+
+* Added Ruby 3.0 support ([#107](https://github.com/pry/pry-doc/pull/107))
 * Fixed the `_pry_ is deprecated, use pry_instance instead` deprecation warning
   ([#111](https://github.com/pry/pry-doc/pull/111))
 
@@ -111,3 +114,4 @@ Pry Doc changelog
 [v0.13.5]: https://github.com/pry/pry-doc/releases/tag/v0.13.5
 [v1.0.0]: https://github.com/pry/pry-doc/releases/tag/v1.0.0
 [v1.1.0]: https://github.com/pry/pry-doc/releases/tag/v1.1.0
+[v1.2.0]: https://github.com/pry/pry-doc/releases/tag/v1.2.0
