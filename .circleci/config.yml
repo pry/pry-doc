@@ -94,6 +94,15 @@ jobs:
       - <<: *repo_restore_cache
       - <<: *bundle_install
       - <<: *unit
+  "ruby-3.0":
+    docker:
+      - image: circleci/ruby:3.0
+    working_directory: ~/pry-doc
+    steps:
+      - checkout
+      - <<: *repo_restore_cache
+      - <<: *bundle_install
+      - <<: *unit
 
 workflows:
   version: 2
@@ -107,3 +116,4 @@ workflows:
       - "ruby-2.5"
       - "ruby-2.6"
       - "ruby-2.7"
+      - "ruby-3.0"
