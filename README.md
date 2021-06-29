@@ -18,12 +18,8 @@ Install the gem using the below command.
 
     gem install pry-doc
 
-To use `pry-doc`, you will need to manually require the gem inside `pry`.
-
-    require 'pry-doc'
-
-If you want `pry` to automatically load `pry-doc` upon starting `pry`, you will need to add the command `require 'pry-doc'` to your `prysrc`.
-You can read more about it [here][pry-overview].
+To automatically load `pry-doc` upon starting `pry`, add the command `require 'pry-doc'` to your `pryrc`.
+You can read more about it in Pry's [README file][pry-overview].
 
 Synopsis
 --------
