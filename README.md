@@ -14,10 +14,12 @@ for Pry.
 Installation
 ------------
 
-All you need is to install the gem. The `pry-doc` plugin will be detected and
-used automatically.
+Install the gem using the below command.
 
     gem install pry-doc
+
+To automatically load `pry-doc` upon starting `pry`, add the command `require 'pry-doc'` to your `pryrc`.
+You can read more about it in Pry's [README file][pry-overview].
 
 Synopsis
 --------
@@ -55,6 +57,7 @@ The project uses the MIT License. See LICENSE file for more information.
 
 [logo]: http://img-fotki.yandex.ru/get/6724/98991937.13/0_9faaa_26ec83af_orig "Pry Doc"
 [pry]: https://github.com/pry/pry
+[pry-overview]: https://github.com/pry/pry#overview
 [show-source]: http://img-fotki.yandex.ru/get/9303/98991937.13/0_9faac_aa86e189_orig "show-source extended by Pry Doc"
 [show-doc]: http://img-fotki.yandex.ru/get/9058/98991937.13/0_9faab_68d7a43a_orig "show-doc extended by Pry Doc"
 [repo]: https://github.com/pry/pry-doc
