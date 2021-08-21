@@ -239,14 +239,14 @@ EOF
 
     it 'should look up core (C) class method (by Method object)' do
       obj = Module.module_eval do
-        Pry::MethodInfo.info_for(Dir.method(:glob))
+        Pry::MethodInfo.info_for(Dir.method(:mkdir))
       end
       expect(obj.source).not_to be_nil
     end
 
     it 'should look up core (C) class method (by UnboundMethod object)' do
       obj = Module.module_eval do
-        Pry::MethodInfo.info_for(class << Dir; instance_method(:glob); end)
+        Pry::MethodInfo.info_for(class << Dir; instance_method(:mkdir); end)
       end
       expect(obj.source).not_to be_nil
     end
