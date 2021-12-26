@@ -146,3 +146,8 @@ desc "Generate the latest Ruby 3.0 docs"
 task "gen30" do
   generate_docs_for('30', Latest.ruby30)
 end
+
+desc "Generate the latest Ruby 3.1 docs"
+task "gen31" do
+  generate_docs_for('31', Latest.ruby31)
+end
