@@ -24,7 +24,7 @@ DESCR
 
   s.add_dependency 'yard', "~> 0.9.11"
   s.add_dependency 'pry', "~> 0.11"
-  s.add_development_dependency 'latest_ruby', '~> 3.0'
+  s.add_development_dependency 'latest_ruby', '~> 3.1'
   s.add_development_dependency 'rspec', '~> 3.5'
   s.add_development_dependency 'rake', "~> 10.0"
 end
