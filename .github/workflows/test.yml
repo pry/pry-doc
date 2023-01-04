@@ -1,4 +1,4 @@
-name: pry-docs
+name: pry-doc
 
 on: [push]
 
