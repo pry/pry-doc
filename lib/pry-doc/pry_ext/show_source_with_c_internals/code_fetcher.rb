@@ -82,7 +82,7 @@ module Pry::CInternals
       return @symbol_map if @symbol_map
 
       tags_path = File.join(ruby_source_folder, "TAGS")
-      ruby_source_installer.install unless File.exists?(tags_path)
+      ruby_source_installer.install unless File.exist?(tags_path)
       @symbol_map = ETagParser.symbol_map_for(tags_path, ruby_source_folder)
     end
   end
