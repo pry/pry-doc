@@ -1,6 +1,6 @@
 ![Pry Doc][logo]
 
-[![Circle Build Status](https://circleci.com/gh/pry/pry-doc.svg?style=shield)](https://circleci.com/gh/pry/pry-doc)
+[![pry-doc](https://github.com/pry/pry-doc/actions/workflows/test.yml/badge.svg)](https://github.com/pry/pry-doc/actions/workflows/test.yml)
 
 * Repository: [https://github.com/pry/pry-doc][repo]
 * Wiki: [https://github.com/pry/pry-doc/wiki][wiki]
