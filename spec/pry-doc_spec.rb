@@ -6,7 +6,7 @@ require "#{direc}/helper"
 require "#{direc}/gem_with_cext/gems/sample"
 require 'set'
 require 'fileutils'
-require 'readline'
+require 'socket'
 
 puts "Testing pry-doc version #{PryDoc::VERSION}..."
 puts "Ruby version: #{RUBY_VERSION}"
@@ -304,7 +304,7 @@ EOF
 
   describe "C stdlib methods" do
     it "finds them" do
-      obj = Pry::MethodInfo.info_for(Readline.method(:readline))
+      obj = Pry::MethodInfo.info_for(Socket.method(:getaddrinfo))
       expect(obj).not_to be_nil
     end
 
