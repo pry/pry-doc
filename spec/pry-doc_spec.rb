@@ -7,6 +7,7 @@ require "#{direc}/gem_with_cext/gems/sample"
 require 'set'
 require 'fileutils'
 require 'socket'
+require 'logger'
 
 puts "Testing pry-doc version #{PryDoc::VERSION}..."
 puts "Ruby version: #{RUBY_VERSION}"
