@@ -22,9 +22,13 @@ DESCR
 
   s.required_ruby_version = '>= 2.0'
 
-  s.add_dependency 'yard', "~> 0.9.11"
+  s.add_dependency 'yard', "~> 0.9.21"
   s.add_dependency 'pry', "~> 0.11"
-  s.add_development_dependency 'latest_ruby', '~> 3.4'
+  s.add_development_dependency 'latest_ruby', '~> 3.5'
   s.add_development_dependency 'rspec', '~> 3.5'
   s.add_development_dependency 'rake', "~> 13.0"
+  s.add_development_dependency 'bigdecimal'
+  s.add_development_dependency 'logger'
+  s.add_development_dependency 'ostruct'
+  s.add_development_dependency 'irb'
 end
