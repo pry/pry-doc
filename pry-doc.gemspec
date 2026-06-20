@@ -18,7 +18,7 @@ DESCR
   s.license = 'MIT'
 
   s.require_paths = ["lib"]
-  s.files = `git ls-files`.split("\n")
+  s.files = `git ls-files lib libexec`.split($/) + ["CHANGELOG.md", "LICENSE", "README.md"]
 
   s.required_ruby_version = '>= 2.0'
 
